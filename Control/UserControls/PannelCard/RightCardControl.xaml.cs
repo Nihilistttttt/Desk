@@ -1,0 +1,730 @@
+﻿using DraggAnimatedPanelExample;
+using GeekDesk.Constant;
+using GeekDesk.Control.Other;
+using GeekDesk.Control.Windows;
+using GeekDesk.Plugins.EveryThing;
+using GeekDesk.Util;
+using GeekDesk.ViewModel;
+using GeekDesk.ViewModel.Temp;
+using HandyControl.Controls;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Threading;
+namespace GeekDesk.Control.UserControls.PannelCard
+{
+    /// <summary>
+    /// RightCardControl.xaml 的交互逻辑
+    /// </summary>
+    public partial class RightCardControl : UserControl
+    {
+        private AppData appData = MainWindow.appData;
+
+        ListBoxDragDropManager<IconInfo> dragMgr;
+
+        public RightCardControl()
+        {
+            InitializeComponent();
+            this.Loaded += RightCardControl_Loaded;
+        }
+
+        private void RightCardControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.dragMgr = new ListBoxDragDropManager<IconInfo>(this.IconListBox);
+            UpdateCheckBoxVisibility();
+        }
+        /// <summary>
+        /// 更新所有复选框的可见性
+        /// </summary>
+        private void UpdateCheckBoxVisibility()
+        {
+            bool isEditMode = appData.AppConfig.IconBatch_NoWrite;
+        
+            // 遍历ListBox中的所有项
+            foreach (var item in IconListBox.Items)
+            {
+                ListBoxItem listBoxItem = IconListBox.ItemContainerGenerator.ContainerFromItem(item) as ListBoxItem;
+                if (listBoxItem != null)
+                {
+                    // 在ListBoxItem的内容模板中查找CheckBox
+                    CheckBox checkBox = FindVisualChild<CheckBox>(listBoxItem);
+                    if (checkBox != null)
+                    {
+                        checkBox.Visibility = isEditMode ? Visibility.Visible : Visibility.Collapsed;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 在可视化树中查找指定类型的子元素
+        /// </summary>
+        private T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        {
+            if (parent == null) return null;
+        
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T result)
+                    return result;
+            
+                T descendant = FindVisualChild<T>(child);
+                if (descendant != null)
+                    return descendant;
+            }
+            return null;
+        }
+        private void Icon_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (appData.AppConfig.IconBatch_NoWrite)
+            {
+                // 编辑模式下处理复选框
+                Panel p = sender as Panel;
+                var checkboxes = p.Children.OfType<CheckBox>();
+                foreach (CheckBox cb in checkboxes)
+                {
+                    cb.IsChecked = !cb.IsChecked;
+                }
+                return;
+            }
+            if (appData.AppConfig.DoubleOpen)
+            {
+                IconClick(sender, e);
+            }
+        }
+
+        private void Icon_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (appData.AppConfig.IconBatch_NoWrite) return;
+            
+            if (!appData.AppConfig.DoubleOpen)
+            {
+                IconClick(sender, e);
+            }
+        }
+
+        /// <summary>
+        /// 图标点击事件
+        /// </summary>
+        private void IconClick(object sender, MouseButtonEventArgs e)
+        {
+            if (!RunTimeStatus.SEARCH_BOX_HIDED_300) return;
+
+            if (appData.AppConfig.DoubleOpen && e.ClickCount >= 2)
+            {
+                IconInfo icon = (IconInfo)((Panel)sender).Tag;
+                if (icon.AdminStartUp)
+                {
+                    ProcessUtil.StartIconApp(icon, IconStartType.ADMIN_STARTUP);
+                }
+                else
+                {
+                    ProcessUtil.StartIconApp(icon, IconStartType.DEFAULT_STARTUP);
+                }
+            }
+            else if (!appData.AppConfig.DoubleOpen && e.ClickCount == 1)
+            {
+                IconInfo icon = (IconInfo)((Panel)sender).Tag;
+                if (icon.AdminStartUp)
+                {
+                    ProcessUtil.StartIconApp(icon, IconStartType.ADMIN_STARTUP);
+                }
+                else
+                {
+                    ProcessUtil.StartIconApp(icon, IconStartType.DEFAULT_STARTUP);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 图标右键事件 - 直接调用系统菜单
+        /// </summary>
+        private void Icon_RightMouseButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (appData.AppConfig.IconBatch_NoWrite)
+            {
+                // 编辑模式下不处理右键，由ContextMenu处理
+                return;
+            }
+            
+            // 非编辑模式下直接调用系统菜单
+            Panel panel = sender as Panel;
+            if (panel != null)
+            {
+                IconInfo icon = panel.Tag as IconInfo;
+                if (icon != null)
+                {
+                    ShowSystemContextMenu(icon);
+                    e.Handled = true; // 阻止默认ContextMenu
+                }
+            }
+        }
+
+        /// <summary>
+        /// 显示系统上下文菜单
+        /// </summary>
+        private void ShowSystemContextMenu(IconInfo icon)
+        {
+            DirectoryInfo[] folders = new DirectoryInfo[1];
+            folders[0] = new DirectoryInfo(icon.Path);
+            ShellContextMenu scm = new ShellContextMenu();
+            System.Drawing.Point p = System.Windows.Forms.Cursor.Position;
+            p.X -= 0;
+            p.Y -= 0;
+            scm.ShowContextMenu(folders, p);
+        }
+
+        /// <summary>
+        /// 管理员方式启动
+        /// </summary>
+        private void IconAdminStart(object sender, RoutedEventArgs e)
+        {
+            IconInfo icon = (IconInfo)((MenuItem)sender).Tag;
+            ProcessUtil.StartIconApp(icon, IconStartType.ADMIN_STARTUP);
+        }
+
+        /// <summary>
+        /// 打开文件所在位置
+        /// </summary>
+        private void ShowInExplore(object sender, RoutedEventArgs e)
+        {
+            IconInfo icon = (IconInfo)((MenuItem)sender).Tag;
+            ProcessUtil.StartIconApp(icon, IconStartType.SHOW_IN_EXPLORE);
+        }
+
+        /// <summary>
+        /// 拖动添加项目
+        /// </summary>
+        private void Wrap_Drop(object sender, DragEventArgs e)
+        {
+            Array dropObject = (System.Array)e.Data.GetData(DataFormats.FileDrop);
+            if (dropObject == null) return;
+            foreach (object obj in dropObject)
+            {
+                string path = (string)obj;
+                IconInfo iconInfo = CommonCode.GetIconInfoByPath(path);
+                MainWindow.appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList.Add(iconInfo);
+            }
+            CommonCode.SortIconList();
+            CommonCode.SaveAppData(MainWindow.appData, Constants.DATA_FILE_PATH);
+        }
+
+        /// <summary>
+        /// 从列表删除图标
+        /// </summary>
+        private void RemoveIcon(object sender, RoutedEventArgs e)
+        {
+            appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList.Remove((IconInfo)((MenuItem)sender).Tag);
+            CheckAndExitEditMode();
+        }
+
+        /// <summary>
+        /// 删除选中的图标
+        /// </summary>
+        private void RemoveSelectedIcons(object sender, RoutedEventArgs e)
+        {
+            var selectedIcons = appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList
+                .Where(icon => icon.IsChecked_NoWrite)
+                .ToList();
+        
+            foreach (var icon in selectedIcons)
+            {
+                appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList.Remove(icon);
+            }
+
+            CheckAndExitEditMode();
+        }
+
+        /// <summary>
+        /// 检查并退出编辑模式
+        /// </summary>
+        private void CheckAndExitEditMode()
+        {
+            // 检查是否还有图标
+            bool hasIcons = appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList.Any();
+        
+            // 如果没有图标了，自动退出编辑模式
+            if (!hasIcons)
+            {
+                appData.AppConfig.IconBatch_NoWrite = false;
+            }
+            // 如果有图标，检查是否还有选中的图标
+            else
+            {
+                bool hasSelectedIcons = appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList
+                    .Any(icon => icon.IsChecked_NoWrite);
+            
+                // 如果没有选中的图标了，退出编辑模式
+                if (!hasSelectedIcons)
+                {
+                    appData.AppConfig.IconBatch_NoWrite = false;
+                }
+            }
+        
+            // 更新复选框可见性
+            UpdateCheckBoxVisibility();
+        }
+        /// <summary>
+        /// 弹出Icon属性修改面板
+        /// </summary>
+        private void PropertyConfig(object sender, RoutedEventArgs e)
+        {
+            IconInfo info = (IconInfo)((MenuItem)sender).Tag;
+            switch (info.IconType)
+            {
+                case IconType.URL:
+                    IconInfoUrlDialog urlDialog = new IconInfoUrlDialog(info);
+                    urlDialog.dialog = HandyControl.Controls.Dialog.Show(urlDialog, "MainWindowDialog");
+                    appData.AppConfig.IconBatch_NoWrite = !appData.AppConfig.IconBatch_NoWrite;
+                    break;
+                default:
+                    IconInfoDialog dialog = new IconInfoDialog(info);
+                    dialog.dialog = HandyControl.Controls.Dialog.Show(dialog, "MainWindowDialog");
+                    appData.AppConfig.IconBatch_NoWrite = !appData.AppConfig.IconBatch_NoWrite;
+                    break;
+            }
+            UpdateCheckBoxVisibility();
+        }
+
+        /// <summary>
+        /// 修改选中的图标
+        /// </summary>
+        private void EditSelectedIcon(object sender, RoutedEventArgs e)
+        {
+            IconInfo info = (IconInfo)((MenuItem)sender).Tag;
+            PropertyConfig(sender, e);
+            UpdateCheckBoxVisibility();
+        }
+
+        private void MenuIcon_MouseEnter(object sender, MouseEventArgs e)
+        {
+            RunTimeStatus.MOUSE_ENTER_ICON = true;
+            if (!RunTimeStatus.ICONLIST_MOUSE_WHEEL)
+            {
+                ThreadPool.QueueUserWorkItem(state =>
+                {
+                    this.Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        IconInfo info = (sender as Panel).Tag as IconInfo;
+                        MyPoptipContent.Text = info.Content;
+                        MyPoptip.VerticalOffset = 30;
+                        Thread.Sleep(50);
+                        if (!RunTimeStatus.ICONLIST_MOUSE_WHEEL)
+                        {
+                            MyPoptip.IsOpen = true;
+                        }
+                    }));
+                });
+            }
+
+            double width = appData.AppConfig.ImageWidth;
+            double height = appData.AppConfig.ImageHeight;
+            width += width * 0.15;
+            height += height * 0.15;
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    ImgStoryBoard(sender, (int)width, (int)height, 1, true);
+                }));
+            });
+        }
+
+        private void MenuIcon_MouseLeave(object sender, MouseEventArgs e)
+        {
+            RunTimeStatus.MOUSE_ENTER_ICON = false;
+            MyPoptip.IsOpen = false;
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    ImgStoryBoard(sender, appData.AppConfig.ImageWidth, appData.AppConfig.ImageHeight, 260);
+                }));
+            });
+        }
+
+        private void ImgStoryBoard(object sender, int height, int width, int milliseconds, bool checkRmStoryboard = false)
+        {
+            if (appData.AppConfig.PMModel) return;
+
+            Panel sp = sender as Panel;
+            Image img = null;
+
+            foreach (var imgBak in sp.Children.OfType<Image>())
+            {
+                img = (Image)imgBak;
+            }
+            if (img == null) return;
+            double afterHeight = img.Height;
+            double afterWidth = img.Width;
+
+            Storyboard myStoryboard = new Storyboard();
+
+            DoubleAnimation heightAnimation = new DoubleAnimation
+            {
+                From = afterHeight,
+                To = height,
+                Duration = new Duration(TimeSpan.FromMilliseconds(milliseconds))
+            };
+            DoubleAnimation widthAnimation = new DoubleAnimation
+            {
+                From = afterWidth,
+                To = width,
+                Duration = new Duration(TimeSpan.FromMilliseconds(milliseconds))
+            };
+
+            Timeline.SetDesiredFrameRate(heightAnimation, 60);
+            Timeline.SetDesiredFrameRate(widthAnimation, 60);
+
+            Storyboard.SetTarget(widthAnimation, img);
+            Storyboard.SetTargetProperty(widthAnimation, new PropertyPath("Width"));
+            Storyboard.SetTarget(heightAnimation, img);
+            Storyboard.SetTargetProperty(heightAnimation, new PropertyPath("Height"));
+
+            myStoryboard.Children.Add(heightAnimation);
+            myStoryboard.Children.Add(widthAnimation);
+
+            CheckRemoveStoryboard crs = new CheckRemoveStoryboard
+            {
+                sb = myStoryboard,
+                sp = sp,
+                heightAnimation = heightAnimation,
+                widthAnimation = widthAnimation,
+                img = img,
+                isMouseOver = !checkRmStoryboard
+            };
+
+            heightAnimation.Completed += (s, ev) =>
+            {
+                if (checkRmStoryboard)
+                {
+                    ThreadStart ts = new ThreadStart(crs.Remove);
+                    System.Threading.Thread t = new System.Threading.Thread(ts);
+                    t.IsBackground = true;
+                    t.Start();
+                }
+                else
+                {
+                    img.BeginAnimation(WidthProperty, null);
+                    img.BeginAnimation(HeightProperty, null);
+                }
+            };
+            img.BeginAnimation(WidthProperty, widthAnimation);
+            img.BeginAnimation(HeightProperty, heightAnimation);
+        }
+
+        private class CheckRemoveStoryboard
+        {
+            public Storyboard sb;
+            public Panel sp;
+            public Image img;
+            public DoubleAnimation heightAnimation;
+            public DoubleAnimation widthAnimation;
+            public bool isMouseOver;
+            public void Remove()
+            {
+                while (true)
+                {
+                    if (sp.IsMouseOver == isMouseOver)
+                    {
+                        App.Current.Dispatcher.Invoke((Action)(() =>
+                        {
+                            img.BeginAnimation(WidthProperty, null);
+                            img.BeginAnimation(HeightProperty, null);
+                        }));
+                        return;
+                    }
+                    else
+                    {
+                        System.Threading.Thread.Sleep(500);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 添加URL项目
+        /// </summary>
+        private void AddUrlIcon(object sender, RoutedEventArgs e)
+        {
+            IconInfoUrlDialog urlDialog = new IconInfoUrlDialog();
+            urlDialog.dialog = HandyControl.Controls.Dialog.Show(urlDialog, "MainWindowDialog");
+        }
+
+        /// <summary>
+        /// 添加系统项目
+        /// </summary>
+        private void AddSystemIcon(object sender, RoutedEventArgs e)
+        {
+            SystemItemWindow.Show();
+        }
+
+        public void VisibilitySearchCard(Visibility vb)
+        {
+            VerticalCard.Visibility = vb;
+            if (vb == Visibility.Visible)
+            {
+                WrapCard.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                WrapCard.Visibility = Visibility.Visible;
+            }
+        }
+
+        /// <summary>
+        /// 搜索Card点击事件
+        /// </summary>
+        private void VerticalCard_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (RunTimeStatus.SEARCH_BOX_SHOW)
+            {
+                MainWindow.mainWindow.HidedSearchBox();
+            }
+        }
+
+        /// <summary>
+        /// 设置光标
+        /// </summary>
+        private void CursorPanel_MouseEnter(object sender, MouseEventArgs e)
+        {
+            this.Cursor = Cursors.Hand;
+        }
+
+        /// <summary>
+        /// 设置光标
+        /// </summary>
+        private void CursorPanel_MouseLeave(object sender, MouseEventArgs e)
+        {
+            this.Cursor = Cursors.Arrow;
+        }
+
+        /// <summary>
+        /// 锁定/解锁主面板
+        /// </summary>
+        private void LockAppPanel(object sender, RoutedEventArgs e)
+        {
+            RunTimeStatus.LOCK_APP_PANEL = !RunTimeStatus.LOCK_APP_PANEL;
+        }
+
+        private void WrapCard_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (RunTimeStatus.LOCK_APP_PANEL)
+            {
+                CardLockCM.Header = "解锁主面板";
+            }
+            else
+            {
+                CardLockCM.Header = "锁定主面板";
+            }
+        }
+
+        private void PDDialog_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (PDDialog.Visibility == Visibility.Visible)
+            {
+                RunTimeStatus.SHOW_MENU_PASSWORDBOX = true;
+                PDDialog.ClearVal();
+                PDDialog.ErrorMsg.Visibility = Visibility.Collapsed;
+                PDDialog.PasswordGrid.Visibility = Visibility.Visible;
+                PDDialog.HintGrid.Visibility = Visibility.Collapsed;
+                PDDialog.count = 0;
+                PDDialog.SetFocus();
+            }
+            else
+            {
+                RunTimeStatus.SHOW_MENU_PASSWORDBOX = false;
+                PDDialog.ClearVal();
+                MainWindow.mainWindow.Focus();
+            }
+        }
+
+        /// <summary>
+        /// 菜单结果icon 列表鼠标滚轮预处理时间
+        /// </summary>
+        private void IconListBox_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            MyPoptip.IsOpen = false;
+            if (RunTimeStatus.ICONLIST_MOUSE_WHEEL)
+            {
+                RunTimeStatus.MOUSE_WHEEL_WAIT_MS = 500;
+            }
+            else
+            {
+                RunTimeStatus.ICONLIST_MOUSE_WHEEL = true;
+
+                new Thread(() =>
+                {
+                    while (RunTimeStatus.MOUSE_WHEEL_WAIT_MS > 0)
+                    {
+                        Thread.Sleep(1);
+                        RunTimeStatus.MOUSE_WHEEL_WAIT_MS -= 1;
+                    }
+                    if (RunTimeStatus.MOUSE_ENTER_ICON)
+                    {
+                        this.Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            MyPoptip.IsOpen = true;
+                        }));
+                    }
+                    RunTimeStatus.MOUSE_WHEEL_WAIT_MS = 100;
+                    RunTimeStatus.ICONLIST_MOUSE_WHEEL = false;
+                }).Start();
+            }
+
+            if (RunTimeStatus.IS_MENU_EDIT) return;
+
+            System.Windows.Controls.ScrollViewer scrollViewer = sender as System.Windows.Controls.ScrollViewer;
+            if (scrollViewer == null)
+            {
+                scrollViewer = ScrollUtil.FindSimpleVisualChild<System.Windows.Controls.ScrollViewer>(IconListBox);
+            }
+            if (e.Delta < 0)
+            {
+                int index = MainWindow.mainWindow.LeftCard.MenuListBox.SelectedIndex;
+                if (ScrollUtil.IsBootomScrollView(scrollViewer))
+                {
+                    if (index < MainWindow.mainWindow.LeftCard.MenuListBox.Items.Count - 1)
+                    {
+                        index++;
+                    }
+                    else
+                    {
+                        index = 0;
+                    }
+                    MainWindow.mainWindow.LeftCard.MenuListBox.SelectedIndex = index;
+                    scrollViewer.ScrollToVerticalOffset(0);
+                }
+            }
+            else if (e.Delta > 0)
+            {
+                if (ScrollUtil.IsTopScrollView(scrollViewer))
+                {
+                    int index = MainWindow.mainWindow.LeftCard.MenuListBox.SelectedIndex;
+                    if (index > 0)
+                    {
+                        index--;
+                    }
+                    else
+                    {
+                        index = MainWindow.mainWindow.LeftCard.MenuListBox.Items.Count - 1;
+                    }
+                    MainWindow.mainWindow.LeftCard.MenuListBox.SelectedIndex = index;
+                    scrollViewer.ScrollToVerticalOffset(0);
+                }
+            }
+        }
+
+        /// <summary>
+        /// menu结果ICON鼠标移动事件
+        /// </summary>
+        private void MenuIcon_MouseMove(object sender, MouseEventArgs e)
+        {
+            IconInfo info = (sender as Panel).Tag as IconInfo;
+            MyPoptipContent.Text = info.Content;
+            MyPoptip.VerticalOffset = 30;
+        }
+
+        /// <summary>
+        /// 控制图标标题显示及隐藏
+        /// </summary>
+        private void ShowTitle_Click(object sender, RoutedEventArgs e)
+        {
+            appData.AppConfig.ShowIconTitle = !appData.AppConfig.ShowIconTitle;
+        }
+        /// <summary>
+        /// 上下文菜单打开时更新菜单项
+        /// </summary>
+        private void ContextMenu_Opened(object sender, RoutedEventArgs e)
+        {
+            ContextMenu contextMenu = sender as ContextMenu;
+            if (contextMenu != null)
+            {
+                // 查找删除所选图标菜单项
+                MenuItem deleteSelectedItem = null;
+                MenuItem editModeItem = null;
+        
+                foreach (var item in contextMenu.Items)
+                {
+                    if (item is MenuItem menuItem)
+                    {
+                        if (menuItem.Name == "DeleteSelectedItem")
+                        {
+                            deleteSelectedItem = menuItem;
+                        }
+                        else if (menuItem.Name == "EditModeItem")
+                        {
+                            editModeItem = menuItem;
+                        }
+                    }
+                }
+
+                // 更新编辑模式菜单项文本
+                if (editModeItem != null)
+                {
+                    editModeItem.Header = appData.AppConfig.IconBatch_NoWrite ? "退出编辑模式" : "编辑模式";
+                }
+
+                // 更新删除所选图标菜单项
+                if (deleteSelectedItem != null)
+                {
+                    int selectedCount = GetSelectedIconCount();
+                    if (appData.AppConfig.IconBatch_NoWrite && selectedCount > 0)
+                    {
+                        deleteSelectedItem.Visibility = Visibility.Visible;
+                        deleteSelectedItem.Header = $"删除所选图标 ({selectedCount})";
+                    }
+                    else
+                    {
+                        deleteSelectedItem.Visibility = Visibility.Collapsed;
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// 编辑模式切换
+        /// </summary>
+        private void EditModeHandle(object sender, RoutedEventArgs e)
+        {
+            if (!appData.AppConfig.IconBatch_NoWrite)
+            {
+                // 开启编辑模式时重置所有选中状态
+                foreach (var ic in IconListBox.Items)
+                {
+                    IconInfo info = ic as IconInfo;
+                    info.IsChecked_NoWrite = false;
+                }
+            }
+            appData.AppConfig.IconBatch_NoWrite = !appData.AppConfig.IconBatch_NoWrite;
+            IconListBox.SelectionMode = SelectionMode.Multiple;
+            UpdateCheckBoxVisibility();
+        }
+
+        /// <summary>
+        /// 获取选中的图标数量
+        /// </summary>
+        private int GetSelectedIconCount()
+        {
+            return appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList
+                .Count(icon => icon.IsChecked_NoWrite);
+        }
+
+        private void IconListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // 选择变化时更新UI
+        }
+    }
+}
