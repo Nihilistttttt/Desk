@@ -4,7 +4,81 @@
 
 ---
 
-## 2026-09-21 — 功能新增 + 编译修复 + 残余清理
+## 2026-09-21 (2) — 图标网格布局 + 拖拽重写 + 面板操作按钮
+
+### 变更记录
+
+#### 图标网格布局系统
+- **IconInfo 新增 GridX/GridY**：每个图标独立网格坐标，消除空占位图标需求
+- **GridPositionPanel**：自定义 Panel 替换 VirtualizingWrapPanel，按 GridX/GridY 定位，格子大小绑定 ImgPanelWidth/ImgPanelHeight
+- **数据迁移**：MigrateIconPositions 删除空白占位图标，按原顺序自动分配网格坐标
+- **滚动方向**：从水平滚动改为垂直滚动（多行网格布局）
+
+#### 拖拽系统重写
+- **去掉 ListBoxDragDropManager**：改用 WPF 原生 DragDrop.DoDragDrop
+- **Preview 事件**：改用 PreviewMouseLeftButtonDown/PreviewMouseMove 避免被 ListBoxItem 吞掉
+- **网格拖拽逻辑**：Wrap_Drop 计算目标格子，空位直接放置，已占用则挤开（推到下一空格）
+- **实时刷新**：RefreshGridPanel() 调用 InvalidateMeasure+InvalidateArrange，拖拽后即时生效
+
+#### 面板操作按钮
+- **MainWindow 菜单按钮**：齿轮按钮左边加菜单图标按钮（三条横线，黑边白底）
+- **操作集中化**：添加URL/系统项目、锁定面板、编辑模式等移到按钮 ContextMenu
+- **编辑模式状态显示**：菜单项文字反映当前状态（"编辑模式"↔"退出编辑模式"）
+- **去掉右键 ContextMenu**：RightCardControl 不再有右键菜单
+
+#### 编辑模式不透明度
+- **进入编辑模式**：CardOpacity = 100（完全不透明，方便操作）
+- **退出编辑模式**：CardOpacity = 0（完全透明，只显示图标）
+
+---
+
+### 踩坑与解决措施
+
+#### 坑 7：BinaryFormatter 反序列化新字段默认值为 0 而非 -1
+- **现象**：旧数据加载后所有图标堆在 (0,0) 位置。
+- **根因**：BinaryFormatter 用 GetUninitializedObject 创建对象，不执行字段初始化器，新增的 gridX/gridY 字段默认为 0 而非 -1。迁移检查 `GridX == -1` 永远为 false。
+- **解决**：改为检测"多个图标全在 (0,0)"触发迁移。
+- **教训**：BinaryFormatter 反序列化不调用构造函数也不执行字段初始化器，新字段默认值是 0/null 而非代码中赋的初值。
+
+#### 坑 8：ListBoxDragDropManager 不支持拖到空格子
+- **现象**：拖拽图标到空位置无反应，只有拖到已有图标上才有效。
+- **根因**：IndexUnderDragCursor 遍历 ListBoxItem 检查 IsMouseOver，空格子没有 ListBoxItem，返回 -1。Drop 方法中 newIndex < 0 且 oldIndex >= 0 时直接 return，不触发 ProcessDrop。
+- **解决**：去掉 ListBoxDragDropManager，改用 WPF 原生 DragDrop.DoDragDrop。
+- **教训**：第三方拖拽管理器依赖 ListBoxItem 存在性，不适合稀疏网格布局。
+
+#### 坑 9：ListBoxItem 吞掉 MouseLeftButtonDown 事件
+- **现象**：编辑模式下鼠标按住图标拖动无反应，Icon_MouseMove 不触发。
+- **根因**：ListBoxItem 内部处理 MouseLeftButtonDown 并标记 e.Handled=true，冒泡事件被拦截，SimpleStackPanel 的 MouseLeftButtonDown/MouseMove 不触发。
+- **解决**：改用 PreviewMouseLeftButtonDown/PreviewMouseMove 隧道事件，先于 ListBoxItem 处理。
+- **教训**：ListBox 内的子元素鼠标事件用 Preview（隧道）版本，避免被 ListBoxItem 吞掉。
+
+#### 坑 10：IconListBox 缺少 AllowDrop 导致 Drop 不触发
+- **现象**：DragDrop.DoDragDrop 调用成功但 Wrap_Drop 不触发。
+- **根因**：移除 ListBoxDragDropManager 后无人设置 listBox.AllowDrop=true，ListBox 默认 AllowDrop=false，拖到 ListBox 内部不触发 Drop 事件。
+- **解决**：XAML 中给 IconListBox 加 AllowDrop="True" 和 Drop="Wrap_Drop"。
+- **教训**：移除拖拽管理器后需手动设置 AllowDrop。
+
+#### 坑 11：GridX_NoWrite 不触发 OnPropertyChanged 导致 UI 不刷新
+- **现象**：拖拽后图标位置在内存中更新了，但 UI 不实时刷新，重启程序才生效。
+- **根因**：GridX_NoWrite/GridY_NoWrite 的 setter 故意不触发 OnPropertyChanged（避免频繁保存），WPF 布局系统不知道属性变了，Panel 不重新排列。
+- **解决**：Wrap_Drop 末尾调用 RefreshGridPanel() → InvalidateMeasure() + InvalidateArrange()。
+- **教训**：NoWrite 属性改值后需手动触发布局刷新。
+
+#### 坑 12：CheckAndExitEditMode 不恢复 CardOpacity
+- **现象**：退出编辑模式后面板仍保持 100% 不透明。
+- **根因**：CheckAndExitEditMode 直接设 IconBatch_NoWrite=false 而不通过 EditModeHandle，不透明度未恢复。
+- **解决**：CheckAndExitEditMode 中检测退出编辑模式时设 CardOpacity=0。
+- **教训**：所有退出编辑模式的路径都要处理副作用（不透明度等）。
+
+#### 坑 13：hc:IconElement.Foreground 属性不存在
+- **现象**：编译报 MC3072 XML 命名空间中不存在属性 IconElement.Foreground。
+- **根因**：HandyControl 的 IconElement 没有 Foreground 附加属性。
+- **解决**：改用 Button 自身的 Foreground 属性。
+- **教训**：HandyControl 附加属性需查文档确认存在性。
+
+---
+
+## 2026-09-21 (1) — 功能新增 + 编译修复 + 残余清理
 
 ### 变更记录
 

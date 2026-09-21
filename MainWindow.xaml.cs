@@ -133,6 +133,7 @@ namespace GeekDesk
             dataFileExist = File.Exists(Constants.DATA_FILE_PATH);
 
             appData = CommonCode.GetAppDataByFile();
+            CommonCode.MigrateIconPositions(appData);
 
             this.DataContext = appData;
             if (appData.MenuList.Count == 0)
@@ -536,6 +537,23 @@ namespace GeekDesk
         {
             SettingMenus.IsOpen = true;
         }
+
+        private void PanelSettingButtonClick(object sender, RoutedEventArgs e)
+        {
+            EditModeItem.Header = appData.AppConfig.IconBatch_NoWrite ? "退出编辑模式" : "编辑模式";
+            PanelSettingMenus.IsOpen = true;
+        }
+
+        private void PanelAddUrlIcon(object sender, RoutedEventArgs e) { RightCard.AddUrlIcon(sender, e); }
+        private void PanelAddSystemIcon(object sender, RoutedEventArgs e) { RightCard.AddSystemIcon(sender, e); }
+        private void PanelLockAppPanel(object sender, RoutedEventArgs e) { RightCard.LockAppPanel(sender, e); }
+        private void PanelShowTitle_Click(object sender, RoutedEventArgs e) { RightCard.ShowTitle_Click(sender, e); }
+        private void PanelEditModeHandle(object sender, RoutedEventArgs e)
+        {
+            RightCard.EditModeHandle(sender, e);
+            EditModeItem.Header = appData.AppConfig.IconBatch_NoWrite ? "退出编辑模式" : "编辑模式";
+        }
+        private void PanelRemoveSelectedIcons(object sender, RoutedEventArgs e) { RightCard.RemoveSelectedIcons(sender, e); }
 
         /// <summary>
         /// 设置菜单点击

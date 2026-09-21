@@ -32,6 +32,39 @@ namespace GeekDesk.ViewModel
 
         private bool isChecked = false; //是否选中
 
+        private int gridX = -1; //网格列位置, -1 表示未设置(迁移前)
+        private int gridY = -1; //网格行位置, -1 表示未设置(迁移前)
+
+
+        public int GridX
+        {
+            get { return gridX; }
+            set { gridX = value; OnPropertyChanged("GridX"); }
+        }
+
+        public int GridX_NoWrite
+        {
+            get { return gridX; }
+            set { gridX = value; }
+        }
+
+        public int GridY
+        {
+            get { return gridY; }
+            set { gridY = value; OnPropertyChanged("GridY"); }
+        }
+
+        public int GridY_NoWrite
+        {
+            get { return gridY; }
+            set { gridY = value; }
+        }
+
+        /// <summary>
+        /// 是否为空白占位图标 (无路径且无名称)
+        /// </summary>
+        public bool IsEmptyIcon => string.IsNullOrEmpty(path) && string.IsNullOrEmpty(name);
+
 
         public bool IsChecked_NoWrite
         {

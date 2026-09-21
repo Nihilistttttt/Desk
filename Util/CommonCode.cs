@@ -147,6 +147,37 @@ namespace GeekDesk.Util
             }
         }
 
+
+        /// <summary>
+        /// 迁移图标到网格坐标: 删除空白占位图标, 按顺序分配 GridX/GridY
+        /// </summary>
+        public static void MigrateIconPositions(AppData appData)
+        {
+            foreach (var menu in appData.MenuList)
+            {
+                bool needsMigration = menu.IconList.Count > 1
+                    && menu.IconList.All(icon => icon.GridX_NoWrite == 0 && icon.GridY_NoWrite == 0);
+                if (!needsMigration) continue;
+
+                var emptyIcons = menu.IconList.Where(icon => icon.IsEmptyIcon).ToList();
+                foreach (var empty in emptyIcons)
+                {
+                    menu.IconList.Remove(empty);
+                }
+
+                int itemsPerRow = (int)(appData.AppConfig.WindowWidth / appData.AppConfig.ImgPanelWidth);
+                if (itemsPerRow < 1) itemsPerRow = 6;
+
+                for (int i = 0; i < menu.IconList.Count; i++)
+                {
+                    menu.IconList[i].GridX_NoWrite = i % itemsPerRow;
+                    menu.IconList[i].GridY_NoWrite = i / itemsPerRow;
+                }
+            }
+            SaveAppData(appData, Constants.DATA_FILE_PATH);
+        }
+
+
         private readonly static object _MyLock = new object();
         /// <summary>
         /// 保存app 数据

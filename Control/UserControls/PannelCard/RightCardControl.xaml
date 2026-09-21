@@ -9,6 +9,7 @@
              xmlns:cst="clr-namespace:GeekDesk.Constant"
              xmlns:draggAnimatedPanel="clr-namespace:DraggAnimatedPanel"
              xmlns:component="clr-namespace:GeekDesk.CustomComponent.VirtualizingWrapPanel"
+             xmlns:gridPanel="clr-namespace:GeekDesk.CustomComponent.GridPositionPanel"
              xmlns:xf="clr-namespace:XamlFlair;assembly=XamlFlair.WPF"
              xmlns:ot="clr-namespace:GeekDesk.Control.Other"
              mc:Ignorable="d"
@@ -134,44 +135,31 @@
             <hc:Card.BorderBrush>
                 <SolidColorBrush Color="#FFFFFFFF" Opacity="0" />
             </hc:Card.BorderBrush>
-            <hc:Card.ContextMenu>
-                <ContextMenu Width="200" Opened="ContextMenu_Opened">
-                    <MenuItem Header="添加URL项目" Click="AddUrlIcon" />
-                    <MenuItem Header="添加系统项目" Click="AddSystemIcon" />
-                    <MenuItem x:Name="CardLockCm" Header="锁定主面板" Click="LockAppPanel" />
-                    <MenuItem x:Name="ShowTitle" Header="隐藏/显示标题" Click="ShowTitle_Click" />
-                    <MenuItem x:Name="EditModeItem" Header="编辑模式" Click="EditModeHandle" />
-                    <MenuItem x:Name="DeleteSelectedItem" Header="删除所选图标" Click="RemoveSelectedIcons"
-                              Visibility="Collapsed" />
-                </ContextMenu>
-            </hc:Card.ContextMenu>
             <hc:DialogContainer>
                 <Grid>
                     <StackPanel Panel.ZIndex="1" Margin="0,-10,-0,0" />
+
 
                     <WrapPanel Orientation="Horizontal"
                                Margin="10">
                         <UniformGrid x:Name="WrapUfg"
                                      xf:Animations.Primary="{xf:Animate BasedOn={StaticResource FadeInAndGrowHorizontally}, Event=Visibility}">
                             <!--<hc:TransitioningContentControl TransitionStoryboard="{StaticResource Custom3Transition3}">-->
-                            <ListBox x:Name="IconListBox"
+                                <ListBox x:Name="IconListBox"
                                      ItemsSource="{Binding AppConfig.SelectedMenuIcons, Mode=OneWay}"
                                      BorderThickness="0"
                                      Padding="0,10,0,0"
-                                     SelectionChanged="IconListBox_SelectionChanged"
-                                     ScrollViewer.CanContentScroll="True"
-                                     VirtualizingPanel.VirtualizationMode="Recycling"
-                                     VirtualizingPanel.IsVirtualizing="True"
-                                     VirtualizingPanel.IsContainerVirtualizable="True"
-                                     VirtualizingPanel.ScrollUnit="Pixel">
+                                     AllowDrop="True"
+                                     Drop="Wrap_Drop"
+                                     SelectionChanged="IconListBox_SelectionChanged">
                                 <ListBox.Template>
                                     <ControlTemplate TargetType="ListBox">
                                         <hc:ScrollViewer x:Name="WrapScroll"
-                                                         HorizontalScrollBarVisibility="Hidden"
-                                                         VerticalScrollBarVisibility="Disabled"
-                                                         IsInertiaEnabled="True"
-                                                         CanContentScroll="True"
-                                                         PreviewMouseWheel="IconListBox_MouseWheel">
+                                                          HorizontalScrollBarVisibility="Disabled"
+                                                          VerticalScrollBarVisibility="Auto"
+                                                          IsInertiaEnabled="True"
+                                                          CanContentScroll="True"
+                                                          PreviewMouseWheel="IconListBox_MouseWheel">
                                             <Border BorderBrush="{TemplateBinding BorderBrush}"
                                                     BorderThickness="{TemplateBinding BorderBrush}">
                                                 <ItemsPresenter />
@@ -190,13 +178,8 @@
                                                         HorizontalAlignment="Center" 
                                                         SwapCommand="{Binding SwapCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"/>-->
 
-                                        <component:VirtualizingWrapPanel VirtualizationMode="Recycling"
-                                                                         IsVirtualizing="True"
-                                                                         IsContainerVirtualizable="True"
-                                                                         VirtualizingPanel.ScrollUnit="Pixel"
-                                                                         Width="{Binding AppConfig.WindowWidth, Mode=OneWay, 
-                                                Converter={StaticResource GetWidthByWwConvert}, 
-                                                ConverterParameter={x:Static cst:WidthTypeEnum.RIGHT_CARD}}" />
+                                        <gridPanel:GridPositionPanel CellWidth="{Binding AppConfig.ImgPanelWidth, Mode=OneWay}"
+                                                                      CellHeight="{Binding AppConfig.ImgPanelHeight, Mode=OneWay}" />
                                     </ItemsPanelTemplate>
                                 </ListBox.ItemsPanel>
 
@@ -232,9 +215,10 @@
                                                              Width="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type Window}},Path=DataContext.AppConfig.ImgPanelWidth, Mode=OneWay}"
                                                              HorizontalAlignment="Center"
                                                              Background="#00FFFFFF"
-                                                             MouseLeftButtonDown="Icon_MouseLeftButtonDown"
-                                                             MouseLeftButtonUp="Icon_MouseLeftButtonUp"
-                                                             MouseRightButtonDown="Icon_RightMouseButtonDown">
+                                                              PreviewMouseLeftButtonDown="Icon_MouseLeftButtonDown"
+                                                              PreviewMouseLeftButtonUp="Icon_MouseLeftButtonUp"
+                                                              PreviewMouseMove="Icon_MouseMove"
+                                                              MouseRightButtonDown="Icon_RightMouseButtonDown">
                                             <!-- 编辑模式下显示的复选框 -->
                                             <CheckBox IsChecked="{Binding IsChecked_NoWrite}"
                                                       x:Name="IconCheckBox"

@@ -1,6 +1,7 @@
 ﻿using GeekDesk.Constant;
 using GeekDesk.Control.Other;
 using GeekDesk.Control.Windows;
+using GeekDesk.CustomComponent.GridPositionPanel;
 using GeekDesk.Util;
 using GeekDesk.ViewModel;
 using System;
@@ -21,7 +22,9 @@ namespace GeekDesk.Control.UserControls.PannelCard
     {
         private AppData appData = MainWindow.appData;
 
-        ListBoxDragDropManager<IconInfo> dragMgr;
+        private Point dragStartPoint;
+        private IconInfo dragIcon;
+        private bool isDragging;
 
         public RightCardControl()
         {
@@ -31,21 +34,10 @@ namespace GeekDesk.Control.UserControls.PannelCard
 
         private void RightCardControl_Loaded(object sender, RoutedEventArgs e)
         {
-            this.dragMgr = new ListBoxDragDropManager<IconInfo>(this.IconListBox);
-            UpdateDragDropManagerState(); // 初始化拖拽管理器状态
             UpdateCheckBoxVisibility();
         }
-        /// <summary>
-        /// 更新拖拽管理器状态
-        /// </summary>
-        private void UpdateDragDropManagerState()
-        {
-            if (dragMgr != null)
-            {
-                // 仅在编辑模式下启用拖拽
-                IconListBox.AllowDrop = appData.AppConfig.IconBatch_NoWrite;
-            }
-        }
+
+
         /// <summary>
         /// 更新所有复选框的可见性
         /// </summary>
@@ -92,18 +84,33 @@ namespace GeekDesk.Control.UserControls.PannelCard
         {
             if (appData.AppConfig.IconBatch_NoWrite)
             {
-                // 编辑模式下处理复选框
-                Panel p = sender as Panel;
-                var checkboxes = p.Children.OfType<CheckBox>();
-                foreach (CheckBox cb in checkboxes)
-                {
-                    cb.IsChecked = !cb.IsChecked;
-                }
+                dragStartPoint = e.GetPosition(null);
+                dragIcon = (sender as Panel)?.Tag as IconInfo;
+                isDragging = false;
                 return;
             }
             if (appData.AppConfig.DoubleOpen)
             {
                 IconClick(sender, e);
+            }
+        }
+
+        private void Icon_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!appData.AppConfig.IconBatch_NoWrite || isDragging || dragIcon == null)
+                return;
+
+            Point currentPos = e.GetPosition(null);
+            double diffX = Math.Abs(currentPos.X - dragStartPoint.X);
+            double diffY = Math.Abs(currentPos.Y - dragStartPoint.Y);
+
+            if (diffX > SystemParameters.MinimumHorizontalDragDistance ||
+                diffY > SystemParameters.MinimumVerticalDragDistance)
+            {
+                isDragging = true;
+                DragDrop.DoDragDrop(sender as DependencyObject, dragIcon, DragDropEffects.Move);
+                isDragging = false;
+                dragIcon = null;
             }
         }
 
@@ -209,6 +216,57 @@ namespace GeekDesk.Control.UserControls.PannelCard
         /// </summary>
         private void Wrap_Drop(object sender, DragEventArgs e)
         {
+            if (e.Data.GetDataPresent(typeof(IconInfo)))
+            {
+                IconInfo draggedIcon = e.Data.GetData(typeof(IconInfo)) as IconInfo;
+                if (draggedIcon == null) return;
+
+                Point mousePos = e.GetPosition(IconListBox);
+                double cellW = appData.AppConfig.ImgPanelWidth;
+                double cellH = appData.AppConfig.ImgPanelHeight;
+                if (cellW <= 0) cellW = 100;
+                if (cellH <= 0) cellH = 100;
+
+                int targetX = (int)(mousePos.X / cellW);
+                int targetY = (int)(mousePos.Y / cellH);
+                if (targetX < 0) targetX = 0;
+                if (targetY < 0) targetY = 0;
+
+                var iconList = MainWindow.appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList;
+
+                IconInfo occupant = iconList.FirstOrDefault(
+                    i => i != draggedIcon && i.GridX_NoWrite == targetX && i.GridY_NoWrite == targetY);
+
+                draggedIcon.GridX_NoWrite = targetX;
+                draggedIcon.GridY_NoWrite = targetY;
+
+                if (occupant != null)
+                {
+                    int itemsPerRow = (int)(appData.AppConfig.WindowWidth / cellW);
+                    if (itemsPerRow < 1) itemsPerRow = 6;
+                    int x = targetX, y = targetY;
+                    while (true)
+                    {
+                        x++;
+                        if (x >= itemsPerRow) { x = 0; y++; }
+                        bool occupied = iconList.Any(
+                            i => i != occupant && i != draggedIcon
+                                 && i.GridX_NoWrite == x && i.GridY_NoWrite == y);
+                        if (!occupied)
+                        {
+                            occupant.GridX_NoWrite = x;
+                            occupant.GridY_NoWrite = y;
+                            break;
+                        }
+                    }
+                }
+
+                CommonCode.SaveAppData(MainWindow.appData, Constants.DATA_FILE_PATH);
+                RefreshGridPanel();
+                e.Effects = DragDropEffects.Move;
+                return;
+            }
+
             Array dropObject = (System.Array)e.Data.GetData(DataFormats.FileDrop);
             if (dropObject == null) return;
             foreach (object obj in dropObject)
@@ -219,6 +277,16 @@ namespace GeekDesk.Control.UserControls.PannelCard
             }
             CommonCode.SortIconList();
             CommonCode.SaveAppData(MainWindow.appData, Constants.DATA_FILE_PATH);
+        }
+
+        private void RefreshGridPanel()
+        {
+            var panel = FindVisualChild<GridPositionPanel>(IconListBox);
+            if (panel != null)
+            {
+                panel.InvalidateMeasure();
+                panel.InvalidateArrange();
+            }
         }
 
         /// <summary>
@@ -233,7 +301,7 @@ namespace GeekDesk.Control.UserControls.PannelCard
         /// <summary>
         /// 删除选中的图标
         /// </summary>
-        private void RemoveSelectedIcons(object sender, RoutedEventArgs e)
+        public void RemoveSelectedIcons(object sender, RoutedEventArgs e)
         {
             var selectedIcons = appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList
                 .Where(icon => icon.IsChecked_NoWrite)
@@ -252,31 +320,30 @@ namespace GeekDesk.Control.UserControls.PannelCard
         /// </summary>
         private void CheckAndExitEditMode()
         {
-            // 检查是否还有图标
+            bool wasInEditMode = appData.AppConfig.IconBatch_NoWrite;
             bool hasIcons = appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList.Any();
-        
-            // 如果没有图标了，自动退出编辑模式
+
             if (!hasIcons)
             {
                 appData.AppConfig.IconBatch_NoWrite = false;
             }
-            // 如果有图标，检查是否还有选中的图标
             else
             {
                 bool hasSelectedIcons = appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList
                     .Any(icon => icon.IsChecked_NoWrite);
-            
-                // 如果没有选中的图标了，退出编辑模式
+
                 if (!hasSelectedIcons)
                 {
                     appData.AppConfig.IconBatch_NoWrite = false;
                 }
             }
-        
-            // 更新复选框可见性
+
+            if (wasInEditMode && !appData.AppConfig.IconBatch_NoWrite)
+            {
+                appData.AppConfig.CardOpacity = 0;
+            }
+
             UpdateCheckBoxVisibility();
-            // 更新拖拽管理器状态
-            UpdateDragDropManagerState();
         }
         /// <summary>
         /// 弹出Icon属性修改面板
@@ -298,8 +365,6 @@ namespace GeekDesk.Control.UserControls.PannelCard
                     break;
             }
             UpdateCheckBoxVisibility();
-            // 更新拖拽管理器状态
-            UpdateDragDropManagerState();
         }
 
         /// <summary>
@@ -310,8 +375,6 @@ namespace GeekDesk.Control.UserControls.PannelCard
             IconInfo info = (IconInfo)((MenuItem)sender).Tag;
             PropertyConfig(sender, e);
             UpdateCheckBoxVisibility();
-            // 更新拖拽管理器状态
-            UpdateDragDropManagerState();
         }
 
         private void MenuIcon_MouseEnter(object sender, MouseEventArgs e)
@@ -465,7 +528,7 @@ namespace GeekDesk.Control.UserControls.PannelCard
         /// <summary>
         /// 添加URL项目
         /// </summary>
-        private void AddUrlIcon(object sender, RoutedEventArgs e)
+        public void AddUrlIcon(object sender, RoutedEventArgs e)
         {
             IconInfoUrlDialog urlDialog = new IconInfoUrlDialog();
             urlDialog.dialog = HandyControl.Controls.Dialog.Show(urlDialog, "MainWindowDialog");
@@ -474,7 +537,7 @@ namespace GeekDesk.Control.UserControls.PannelCard
         /// <summary>
         /// 添加系统项目
         /// </summary>
-        private void AddSystemIcon(object sender, RoutedEventArgs e)
+        public void AddSystemIcon(object sender, RoutedEventArgs e)
         {
             SystemItemWindow.Show();
         }
@@ -512,21 +575,14 @@ namespace GeekDesk.Control.UserControls.PannelCard
         /// <summary>
         /// 锁定/解锁主面板
         /// </summary>
-        private void LockAppPanel(object sender, RoutedEventArgs e)
+        public void LockAppPanel(object sender, RoutedEventArgs e)
         {
             RunTimeStatus.LOCK_APP_PANEL = !RunTimeStatus.LOCK_APP_PANEL;
         }
 
         private void WrapCard_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (RunTimeStatus.LOCK_APP_PANEL)
-            {
-                CardLockCm.Header = "解锁主面板";
-            }
-            else
-            {
-                CardLockCm.Header = "锁定主面板";
-            }
+
         }
 
         /// <summary>
@@ -618,7 +674,7 @@ namespace GeekDesk.Control.UserControls.PannelCard
         /// <summary>
         /// 控制图标标题显示及隐藏
         /// </summary>
-        private void ShowTitle_Click(object sender, RoutedEventArgs e)
+        public void ShowTitle_Click(object sender, RoutedEventArgs e)
         {
             appData.AppConfig.ShowIconTitle = !appData.AppConfig.ShowIconTitle;
         }
@@ -674,22 +730,25 @@ namespace GeekDesk.Control.UserControls.PannelCard
         /// <summary>
         /// 编辑模式切换
         /// </summary>
-        private void EditModeHandle(object sender, RoutedEventArgs e)
+
+        public void EditModeHandle(object sender, RoutedEventArgs e)
         {
             if (!appData.AppConfig.IconBatch_NoWrite)
             {
-                // 开启编辑模式时重置所有选中状态
                 foreach (var ic in IconListBox.Items)
                 {
                     IconInfo info = ic as IconInfo;
                     info.IsChecked_NoWrite = false;
                 }
+                appData.AppConfig.CardOpacity = 100;
+            }
+            else
+            {
+                appData.AppConfig.CardOpacity = 0;
             }
             appData.AppConfig.IconBatch_NoWrite = !appData.AppConfig.IconBatch_NoWrite;
             IconListBox.SelectionMode = SelectionMode.Multiple;
             UpdateCheckBoxVisibility();
-            // 更新拖拽管理器状态
-            UpdateDragDropManagerState();
         }
 
         /// <summary>

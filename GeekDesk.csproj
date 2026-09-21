@@ -298,6 +298,7 @@
     <Compile Include="CustomComponent\VirtualizingWrapPanel\SpacingMode.cs" />
     <Compile Include="CustomComponent\VirtualizingWrapPanel\VirtualizingPanelBase.cs" />
     <Compile Include="CustomComponent\VirtualizingWrapPanel\VirtualizingWrapPanel.cs" />
+    <Compile Include="CustomComponent\GridPositionPanel\GridPositionPanel.cs" />
 
     <Compile Include="Util\WindowUtil.cs" />
     <Compile Include="CustomComponent\VirtualizingWrapPanel\ScrollDirection.cs" />
