@@ -37,6 +37,7 @@ namespace GeekDesk.Control.Other
             IconInfo info = this.DataContext as IconInfo;
             info.BitmapImage = IconImg.Source as BitmapImage;
             info.Name = IconName.Text;
+            info.RelativePath = IconRelativePath.Text;
             info.AdminStartUp = IconIsAdmin.IsChecked.Value;
             info.StartArg = StartArg.Text;
             CommonCode.SaveAppData(MainWindow.appData, Constants.DATA_FILE_PATH);

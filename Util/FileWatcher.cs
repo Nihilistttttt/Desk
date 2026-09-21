@@ -65,7 +65,9 @@ namespace GeekDesk.Util
             IconInfo iconInfo = CommonCode.GetIconInfoByPath(e.FullPath);
             App.Current.Dispatcher.Invoke(() =>
             {
-                linkMenuMap[sender as FileSystemWatcher].IconList.Add(iconInfo);
+                var iconList = linkMenuMap[sender as FileSystemWatcher].IconList;
+                CommonCode.AssignEmptyGridCell(iconInfo, iconList);
+                iconList.Add(iconInfo);
             });
         }
 

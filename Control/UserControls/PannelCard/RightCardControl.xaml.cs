@@ -273,7 +273,9 @@ namespace GeekDesk.Control.UserControls.PannelCard
             {
                 string path = (string)obj;
                 IconInfo iconInfo = CommonCode.GetIconInfoByPath(path);
-                MainWindow.appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList.Add(iconInfo);
+                var iconList = MainWindow.appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList;
+                CommonCode.AssignEmptyGridCell(iconInfo, iconList);
+                iconList.Add(iconInfo);
             }
             CommonCode.SortIconList();
             CommonCode.SaveAppData(MainWindow.appData, Constants.DATA_FILE_PATH);
@@ -329,6 +331,7 @@ namespace GeekDesk.Control.UserControls.PannelCard
         private void PropertyConfig(object sender, RoutedEventArgs e)
         {
             IconInfo info = (IconInfo)((MenuItem)sender).Tag;
+            MainWindow.PreventHide = true;
             switch (info.IconType)
             {
                 case IconType.URL:
@@ -340,6 +343,7 @@ namespace GeekDesk.Control.UserControls.PannelCard
                     dialog.dialog = HandyControl.Controls.Dialog.Show(dialog, "MainWindowDialog");
                     break;
             }
+            Dispatcher.BeginInvoke(new Action(() => MainWindow.PreventHide = false), System.Windows.Threading.DispatcherPriority.Background);
         }
 
         /// <summary>
@@ -506,7 +510,9 @@ namespace GeekDesk.Control.UserControls.PannelCard
         public void AddUrlIcon(object sender, RoutedEventArgs e)
         {
             IconInfoUrlDialog urlDialog = new IconInfoUrlDialog();
+            MainWindow.PreventHide = true;
             urlDialog.dialog = HandyControl.Controls.Dialog.Show(urlDialog, "MainWindowDialog");
+            Dispatcher.BeginInvoke(new Action(() => MainWindow.PreventHide = false), System.Windows.Threading.DispatcherPriority.Background);
         }
 
         /// <summary>
@@ -514,7 +520,9 @@ namespace GeekDesk.Control.UserControls.PannelCard
         /// </summary>
         public void AddSystemIcon(object sender, RoutedEventArgs e)
         {
+            MainWindow.PreventHide = true;
             SystemItemWindow.Show();
+            Dispatcher.BeginInvoke(new Action(() => MainWindow.PreventHide = false), System.Windows.Threading.DispatcherPriority.Background);
         }
 
         public void VisibilitySearchCard(Visibility vb)

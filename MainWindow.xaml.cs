@@ -571,8 +571,12 @@ namespace GeekDesk
         }
 
 
+        public static bool PreventHide = false;
+
         private void AppWindowLostFocus()
         {
+            if (PreventHide) return;
+            if (appData.AppConfig.IconBatch_NoWrite) return;
             if ((appData.AppConfig.AppHideType == AppHideType.LOST_FOCUS
                 && this.Opacity == 1 )||(MainWindow.appData.AppConfig.AppHideType == AppHideType.START_EXE ))
             {

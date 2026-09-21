@@ -50,7 +50,9 @@ namespace GeekDesk.Control.Other
             info.Path = IconUrl.Text;
             if (newIconInfo)
             {
-                MainWindow.appData.MenuList[MainWindow.appData.AppConfig.SelectedMenuIndex].IconList.Add(info);
+                var iconList = MainWindow.appData.MenuList[MainWindow.appData.AppConfig.SelectedMenuIndex].IconList;
+                CommonCode.AssignEmptyGridCell(info, iconList);
+                iconList.Add(info);
             }
             CommonCode.SaveAppData(MainWindow.appData, Constants.DATA_FILE_PATH);
             dialog.Close();

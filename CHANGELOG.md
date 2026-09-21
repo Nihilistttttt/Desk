@@ -4,6 +4,29 @@
 
 ---
 
+## 2026-09-21 (4) — 相对路径可编辑 + 防误隐藏 + 新图标自动定位
+
+### 变更记录
+- **相对路径可编辑**：IconInfoDialog 中相对路径从只读 TextBlock 改为可编辑 TextBox，SaveProperty 中保存
+- **防止误隐藏**：AppWindowLostFocus 加 PreventHide 标志 + 编辑模式检查；AddUrlIcon/AddSystemIcon/PropertyConfig 打开对话框前设 PreventHide=true，Dispatcher.BeginInvoke(Background) 延迟恢复
+- **新图标自动定位**：CommonCode.AssignEmptyGridCell 按行优先顺序找第一个空格子，6 处添加图标的地方均调用
+
+### 踩坑与解决措施
+
+#### 坑 15：新添加图标 GridX/GridY=-1 被隐藏
+- **现象**：添加 URL/系统项目后看不到新图标。
+- **根因**：new IconInfo() 创建时 gridX=-1, gridY=-1（字段初始化器），GridPositionPanel 把 GridX<0 的图标 Arrange 到 (0,0,0,0) 即不可见。
+- **解决**：CommonCode.AssignEmptyGridCell 在 Add 前自动找空格子分配坐标。
+- **教训**：新增数据模型字段后，所有创建路径都要正确初始化。
+
+#### 坑 16：打开对话框触发 MainWindow Deactivated → HideApp
+- **现象**：点击"添加URL项目"/"添加系统项目"后窗口消失，对话框不可见。
+- **根因**：ContextMenu 关闭 → MainWindow 失焦 → AppWindow_Deactivated → AppWindowLostFocus → HideApp，对话框跟着隐藏。
+- **解决**：PreventHide 标志位 + 编辑模式检查阻止隐藏；Dispatcher.BeginInvoke(Background) 延迟恢复。
+- **教训**：WPF 失焦隐藏逻辑需排除子窗口/对话框打开场景。
+
+---
+
 ## 2026-09-21 (3) — 编辑模式入口收窄
 
 ### 变更记录

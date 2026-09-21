@@ -28,14 +28,7 @@
             </hc:UniformSpacingPanel>
             <hc:UniformSpacingPanel Spacing="10" Margin="0,15,0,0">
                 <TextBlock Text="相对路径:"  Style="{StaticResource LeftTb}"/>
-                <TextBlock Text="{Binding RelativePath, Mode=OneWay}" 
-                           VerticalAlignment="Center"
-                           Margin="0,8,0,0"
-                           Width="230"
-                           FontSize="14"
-                           TextTrimming="WordEllipsis"
-                           hc:Poptip.Placement="Bottom"
-                           hc:Poptip.Content="{Binding RelativePath, Mode=OneWay, Converter={StaticResource StringAppendConvert}, ConverterParameter='\{\}\\\n(同盘符下才会建立相对路径)'}"/>
+                <TextBox x:Name="IconRelativePath" Style="{StaticResource MyTextBoxStyle}" Text="{Binding RelativePath, Mode=OneWay}" Width="230" FontSize="14"/>
             </hc:UniformSpacingPanel>
             <hc:UniformSpacingPanel Spacing="10" Grid.ColumnSpan="4" Margin="0,15,0,0">
                 <TextBlock  Text="图标:"  Style="{StaticResource LeftTb}"/>

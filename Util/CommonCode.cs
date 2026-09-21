@@ -149,6 +149,30 @@ namespace GeekDesk.Util
 
 
         /// <summary>
+        /// 为新图标自动寻找空网格位置
+        /// </summary>
+        public static void AssignEmptyGridCell(IconInfo newIcon, System.Collections.ObjectModel.ObservableCollection<IconInfo> iconList)
+        {
+            int itemsPerRow = (int)(MainWindow.appData.AppConfig.WindowWidth / MainWindow.appData.AppConfig.ImgPanelWidth);
+            if (itemsPerRow < 1) itemsPerRow = 6;
+
+            for (int y = 0; ; y++)
+            {
+                for (int x = 0; x < itemsPerRow; x++)
+                {
+                    bool occupied = iconList.Any(i => i != newIcon && i.GridX_NoWrite == x && i.GridY_NoWrite == y);
+                    if (!occupied)
+                    {
+                        newIcon.GridX_NoWrite = x;
+                        newIcon.GridY_NoWrite = y;
+                        return;
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
         /// 迁移图标到网格坐标: 删除空白占位图标, 按顺序分配 GridX/GridY
         /// </summary>
         public static void MigrateIconPositions(AppData appData)

@@ -41,6 +41,7 @@ namespace GeekDesk.Control.UserControls.SystemItem
                 //startupMenu or Store
                 iconInfo = CommonCode.GetIconInfoByPath(thisInfo.LnkPath_NoWrite);
             }
+            CommonCode.AssignEmptyGridCell(iconInfo, menuInfo.IconList);
             menuInfo.IconList.Add(iconInfo);
             CommonCode.SaveAppData(MainWindow.appData, Constants.DATA_FILE_PATH);
         }

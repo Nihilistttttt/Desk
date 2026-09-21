@@ -544,8 +544,9 @@ namespace GeekDesk.Control.UserControls.PannelCard
             {
                 // 将已有图标移动到该菜单
                 appData.MenuList[MenuListBox.SelectedIndex].IconList.Remove(iconInfo);
-                appData.MenuList[MenuListBox.Items.IndexOf(mi)].IconList.Add(iconInfo);
-
+                var targetList = appData.MenuList[MenuListBox.Items.IndexOf(mi)].IconList;
+                CommonCode.AssignEmptyGridCell(iconInfo, targetList);
+                targetList.Add(iconInfo);
             }
             else
             {
@@ -562,7 +563,9 @@ namespace GeekDesk.Control.UserControls.PannelCard
                         break;
 
                     }
-                    appData.MenuList[MenuListBox.Items.IndexOf(mi)].IconList.Add(iconInfo);
+                    var targetList = appData.MenuList[MenuListBox.Items.IndexOf(mi)].IconList;
+                    CommonCode.AssignEmptyGridCell(iconInfo, targetList);
+                    targetList.Add(iconInfo);
                 }
                 CommonCode.SortIconList();
                 CommonCode.SaveAppData(MainWindow.appData, Constants.DATA_FILE_PATH);
