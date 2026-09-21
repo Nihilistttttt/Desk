@@ -4,6 +4,23 @@
 
 ---
 
+## 2026-09-21 (3) — 编辑模式入口收窄
+
+### 变更记录
+- **PropertyConfig**：去掉 `IconBatch_NoWrite` 切换，打开图标属性对话框不再退出编辑模式
+- **CheckAndExitEditMode**：去掉自动退出编辑模式逻辑，只更新 UI
+- 编辑模式现在只能通过上方菜单按钮切换
+
+### 踩坑与解决措施
+
+#### 坑 14：PropertyConfig/CheckAndExitEditMode 自动切换编辑模式
+- **现象**：编辑模式下右键图标→属性，关闭对话框后编辑模式被退出，且透明度不变。
+- **根因**：PropertyConfig 中 `IconBatch_NoWrite = !IconBatch_NoWrite` 切换了编辑模式但不处理 CardOpacity；CheckAndExitEditMode 也自动退出编辑模式。
+- **解决**：两处均去掉 `IconBatch_NoWrite` 切换，编辑模式只由上方菜单按钮控制。
+- **教训**：设计约束"只有上方按键可切换编辑模式"需在所有代码路径中贯彻，不能有旁路切换。
+
+---
+
 ## 2026-09-21 (2) — 图标网格布局 + 拖拽重写 + 面板操作按钮
 
 ### 变更记录

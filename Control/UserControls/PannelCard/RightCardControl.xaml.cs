@@ -320,28 +320,6 @@ namespace GeekDesk.Control.UserControls.PannelCard
         /// </summary>
         private void CheckAndExitEditMode()
         {
-            bool wasInEditMode = appData.AppConfig.IconBatch_NoWrite;
-            bool hasIcons = appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList.Any();
-
-            if (!hasIcons)
-            {
-                appData.AppConfig.IconBatch_NoWrite = false;
-            }
-            else
-            {
-                bool hasSelectedIcons = appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList
-                    .Any(icon => icon.IsChecked_NoWrite);
-
-                if (!hasSelectedIcons)
-                {
-                    appData.AppConfig.IconBatch_NoWrite = false;
-                }
-            }
-
-            if (wasInEditMode && !appData.AppConfig.IconBatch_NoWrite)
-            {
-                appData.AppConfig.CardOpacity = 0;
-            }
 
             UpdateCheckBoxVisibility();
         }
@@ -356,15 +334,12 @@ namespace GeekDesk.Control.UserControls.PannelCard
                 case IconType.URL:
                     IconInfoUrlDialog urlDialog = new IconInfoUrlDialog(info);
                     urlDialog.dialog = HandyControl.Controls.Dialog.Show(urlDialog, "MainWindowDialog");
-                    appData.AppConfig.IconBatch_NoWrite = !appData.AppConfig.IconBatch_NoWrite;
                     break;
                 default:
                     IconInfoDialog dialog = new IconInfoDialog(info);
                     dialog.dialog = HandyControl.Controls.Dialog.Show(dialog, "MainWindowDialog");
-                    appData.AppConfig.IconBatch_NoWrite = !appData.AppConfig.IconBatch_NoWrite;
                     break;
             }
-            UpdateCheckBoxVisibility();
         }
 
         /// <summary>
