@@ -40,7 +40,7 @@ namespace GeekDesk.Util
                 {
                     Visual = grid
                 };
-                MainWindow.mainWindow.BGBorder.Background = vb;
+                MainWindow.mainWindow.BgBorder.Background = vb;
             }
             else
             {
@@ -60,7 +60,7 @@ namespace GeekDesk.Util
                 };
                 lgb.GradientStops.Add(gs2);
                 lgb.Opacity = (double)(Math.Round((decimal)(appConfig.BgOpacity / 100.00), 2));
-                MainWindow.mainWindow.BGBorder.Background = lgb;
+                MainWindow.mainWindow.BgBorder.Background = lgb;
             }
 
         }

@@ -382,7 +382,7 @@ namespace GeekDesk.Util
 				// not previously in the ListBox, then insert the item.
 				if( oldIndex > -1 )
                 {
-					// 外部业务代码
+					// 澶栭儴涓氬姟浠ｇ爜
 					itemsSource.Move(oldIndex, newIndex);
 					if (MainWindow.appData.AppConfig.IconSortType != SortType.CUSTOM)
                     {
@@ -390,11 +390,11 @@ namespace GeekDesk.Util
 						if (MainWindow.mainWindow.Visibility == Visibility.Collapsed
 										|| MainWindow.mainWindow.Opacity != 1)
 						{
-							Growl.WarningGlobal("已将图标排序规则重置为自定义!");
+							Growl.WarningGlobal("宸插皢鍥炬爣鎺掑簭瑙勫垯閲嶇疆涓鸿嚜瀹氫箟!");
 						}
 						else
 						{
-							Growl.Warning("已将图标排序规则重置为自定义!", "MainWindowGrowl");
+							Growl.Warning("宸插皢鍥炬爣鎺掑簭瑙勫垯閲嶇疆涓鸿嚜瀹氫箟!", "MainWindowGrowl");
 						}
 					}
 				}

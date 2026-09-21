@@ -7,7 +7,7 @@
              xmlns:hc="https://handyorg.github.io/handycontrol"
              xmlns:cvt="clr-namespace:GeekDesk.Converts"
              xmlns:cst="clr-namespace:GeekDesk.Constant"
-             xmlns:DraggAnimatedPanel="clr-namespace:DraggAnimatedPanel"
+             xmlns:draggAnimatedPanel="clr-namespace:DraggAnimatedPanel"
              xmlns:component="clr-namespace:GeekDesk.CustomComponent.VirtualizingWrapPanel"
              xmlns:xf="clr-namespace:XamlFlair;assembly=XamlFlair.WPF"
              xmlns:ot="clr-namespace:GeekDesk.Control.Other"
@@ -43,27 +43,6 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListBoxItem}">
                         <Border>
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="SearchListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
-            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                        <Border>
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="VerticalAlignment" Value="Center" />
-                                </Style>
-                            </Border.Style>
                             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
@@ -118,8 +97,7 @@
         </Storyboard>
 
         <cvt:OpcityConvert x:Key="OpcityConvert" />
-        <cvt:GetWidthByWWConvert x:Key="GetWidthByWWConvert" />
-        <temp:SearchIconList x:Key="SearchIconList" />
+        <cvt:GetWidthByWWConvert x:Key="GetWidthByWwConvert" />
         <cvt:Boolean2VisibilityConverter x:Key="MyBoolean2VisibilityConverter" />
         <cvt:ValueConvert x:Key="ValueConvert" />
         <cst:RunTimeStatus x:Key="RunTimeStatus" />
@@ -160,8 +138,8 @@
                 <ContextMenu Width="200" Opened="ContextMenu_Opened">
                     <MenuItem Header="添加URL项目" Click="AddUrlIcon" />
                     <MenuItem Header="添加系统项目" Click="AddSystemIcon" />
-                    <MenuItem x:Name="CardLockCM" Header="锁定主面板" Click="LockAppPanel" />
-                    <MenuItem x:Name="showTitle" Header="隐藏/显示标题" Click="ShowTitle_Click" />
+                    <MenuItem x:Name="CardLockCm" Header="锁定主面板" Click="LockAppPanel" />
+                    <MenuItem x:Name="ShowTitle" Header="隐藏/显示标题" Click="ShowTitle_Click" />
                     <MenuItem x:Name="EditModeItem" Header="编辑模式" Click="EditModeHandle" />
                     <MenuItem x:Name="DeleteSelectedItem" Header="删除所选图标" Click="RemoveSelectedIcons"
                               Visibility="Collapsed" />
@@ -169,18 +147,11 @@
             </hc:Card.ContextMenu>
             <hc:DialogContainer>
                 <Grid>
-                    <ot:PasswordDialog
-                        xf:Animations.Primary="{xf:Animate BasedOn={StaticResource FadeInAndGrowHorizontally}, Event=Visibility, Duration=50, Delay=0}"
-                        x:Name="PDDialog"
-                        Visibility="Collapsed"
-                        Panel.ZIndex="99"
-                        IsVisibleChanged="PDDialog_IsVisibleChanged"
-                        Margin="0,-100,0,0" />
                     <StackPanel Panel.ZIndex="1" Margin="0,-10,-0,0" />
 
                     <WrapPanel Orientation="Horizontal"
                                Margin="10">
-                        <UniformGrid x:Name="WrapUFG"
+                        <UniformGrid x:Name="WrapUfg"
                                      xf:Animations.Primary="{xf:Animate BasedOn={StaticResource FadeInAndGrowHorizontally}, Event=Visibility}">
                             <!--<hc:TransitioningContentControl TransitionStoryboard="{StaticResource Custom3Transition3}">-->
                             <ListBox x:Name="IconListBox"
@@ -224,7 +195,7 @@
                                                                          IsContainerVirtualizable="True"
                                                                          VirtualizingPanel.ScrollUnit="Pixel"
                                                                          Width="{Binding AppConfig.WindowWidth, Mode=OneWay, 
-                                                Converter={StaticResource GetWidthByWWConvert}, 
+                                                Converter={StaticResource GetWidthByWwConvert}, 
                                                 ConverterParameter={x:Static cst:WidthTypeEnum.RIGHT_CARD}}" />
                                     </ItemsPanelTemplate>
                                 </ListBox.ItemsPanel>
@@ -308,8 +279,7 @@
                  Visibility="Collapsed"
                  BorderThickness="1"
                  Effect="{DynamicResource EffectShadow2}"
-                 Margin="5,0,5,5" Grid.ColumnSpan="2"
-                 MouseLeftButtonDown="VerticalCard_MouseLeftButtonDown">
+                 Margin="5,0,5,5" Grid.ColumnSpan="2"><!-- MouseLeftButtonDown="VerticalCard_MouseLeftButtonDown" -->
             <hc:Card.Background>
                 <SolidColorBrush Color="AliceBlue"
                                  hc:GeometryEffect.GeometryEffect="20"
@@ -320,7 +290,7 @@
             </hc:Card.BorderBrush>
         </hc:Card>
 
-        <hc:LoadingCircle x:Name="Loading_RightCard"
+        <hc:LoadingCircle x:Name="LoadingRightCard"
                           Width="45" Height="45"
                           DotBorderBrush="White"
                           DotBorderThickness="2"

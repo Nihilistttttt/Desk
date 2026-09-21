@@ -82,8 +82,8 @@ namespace GeekDesk.Control.Windows
             this.Left = x;
             this.Top = y;
 
-            DesktopBG.Width = this.Width;
-            DesktopBG.Height = this.Height;
+            DesktopBg.Width = this.Width;
+            DesktopBg.Height = this.Height;
             this.Topmost = true;
 
             System.Drawing.Bitmap bgBitmap = new System.Drawing.Bitmap(
@@ -108,9 +108,9 @@ namespace GeekDesk.Control.Windows
                                         Int32Rect.Empty,
                                         BitmapSizeOptions.FromEmptyOptions()
                                     );
-            DesktopBG.Source = bs;
-            VisualBrush b = (VisualBrush)PixelBG.Fill;
-            b.Visual = DesktopBG;
+            DesktopBg.Source = bs;
+            VisualBrush b = (VisualBrush)PixelBg.Fill;
+            b.Visual = DesktopBg;
             Mouse.OverrideCursor = Cursors.Cross;
 
             
@@ -141,7 +141,7 @@ namespace GeekDesk.Control.Windows
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Mouse.OverrideCursor = null;
-            Point pos = e.MouseDevice.GetPosition(DesktopBG);
+            Point pos = e.MouseDevice.GetPosition(DesktopBg);
             colorPicker.SelectedBrush = new SolidColorBrush(GetColorAtPosition(Mouse.GetPosition(this)));
             this.Close();
             ClickColorPickerToggleButton(colorPicker);
@@ -186,7 +186,7 @@ namespace GeekDesk.Control.Windows
 
         private void SetPixelAbout(MouseEventArgs e)
         {
-            VisualBrush b = (VisualBrush)PixelBG.Fill;
+            VisualBrush b = (VisualBrush)PixelBg.Fill;
 
             Point pos = Mouse.GetPosition(this);
 
@@ -227,9 +227,9 @@ namespace GeekDesk.Control.Windows
 
             System.Drawing.Color dColor = System.Drawing.Color.FromArgb(wColor.A, wColor.R, wColor.G, wColor.B);
 
-            PixelColor_HTML.Text = "#" + dColor.Name.ToUpper().Substring(2);
-            PixelColor_RGB.Text = dColor.R + "," + dColor.G + "," + dColor.B;
-            Pixel_XY.Text = (int)pos.X + "*" + (int)pos.Y;
+            PixelColorHtml.Text = "#" + dColor.Name.ToUpper().Substring(2);
+            PixelColorRgb.Text = dColor.R + "," + dColor.G + "," + dColor.B;
+            PixelXy.Text = (int)pos.X + "*" + (int)pos.Y;
 
             SolidColorBrush scb = (SolidColorBrush)PixelColor.Fill;
             scb.Color = wColor;

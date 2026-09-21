@@ -30,7 +30,7 @@ namespace GeekDesk.Control.Other
         {
             GradientBGParam bg = new GradientBGParam();
             bg.Id = Guid.NewGuid().ToString();
-            bg.Name = BGName.Text;
+            bg.Name = BgName.Text;
             bg.Color1 = MainWindow.appData.AppConfig.GradientBGParam.Color1;
             bg.Color2 = MainWindow.appData.AppConfig.GradientBGParam.Color2;
             MainWindow.appData.AppConfig.CustomBGParams.Add(bg);

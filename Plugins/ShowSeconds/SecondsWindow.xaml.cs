@@ -74,10 +74,10 @@ namespace ShowSeconds
                 sleepTime = 1000;
             }
 
-            BGBorder.Background = scb;
+            BgBorder.Background = scb;
             this.DataContext = dc;
             this.Topmost = true;
-            BGBorder.Visibility = Visibility.Collapsed;
+            BgBorder.Visibility = Visibility.Collapsed;
             this.Show();
         }
 
@@ -194,21 +194,21 @@ namespace ShowSeconds
                                 expandClock = false;
                             }
 
-                            if (!BGBorder.IsVisible)
+                            if (!BgBorder.IsVisible)
                             {
 
                                 System.Drawing.Color theamColor = GetColor(1919, 1079);
                                 if (CalculateLight(theamColor) > 255 / 2)
                                 {
                                     //light
-                                    BGBorder.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(theamColor.A, theamColor.R, theamColor.G, theamColor.B));
+                                    BgBorder.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(theamColor.A, theamColor.R, theamColor.G, theamColor.B));
                                     SecondsText.Foreground = Constants.lightFont;
                                 }
                                 else
                                 {
                                     // dark
                                     //BGBorder.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(theamColor.A, theamColor.R, theamColor.G, theamColor.B));
-                                    BGBorder.Background = Constants.darkBG;
+                                    BgBorder.Background = Constants.darkBG;
                                     SecondsText.Foreground = Constants.darkFont;
                                 }
 
@@ -221,12 +221,12 @@ namespace ShowSeconds
                                 int sMarginBottom = (int)(SystemParameters.WorkArea.Height * tProportion);
                                 Left = sx - Width;
                                 Top = SystemParameters.WorkArea.Height - Height;
-                                BGBorder.Visibility = Visibility.Visible;
+                                BgBorder.Visibility = Visibility.Visible;
                                 timer.Start();
                             }
                             else
                             {
-                                BGBorder.Visibility = Visibility.Collapsed;
+                                BgBorder.Visibility = Visibility.Collapsed;
                                 timer.Stop();
                             }
                         }
@@ -244,7 +244,7 @@ namespace ShowSeconds
                                 || y > 1020 / h * height)
                                 )
                         {
-                            BGBorder.Visibility = Visibility.Collapsed;
+                            BgBorder.Visibility = Visibility.Collapsed;
                             timer.Stop();
                         }
                     }

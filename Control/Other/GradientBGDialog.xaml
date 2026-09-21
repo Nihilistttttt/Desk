@@ -21,7 +21,7 @@
                                             Height="400"
                                             Margin="0,-620,0,0">
 
-                <Border Style="{StaticResource BorderBG}">
+                <Border Style="{StaticResource BorderBg}">
                     <Grid>
                         <TextBlock Text="提示: 右键点击可以删除自定义的背景颜色哦" Foreground="Gray" HorizontalAlignment="Center" Margin="0,5,0,0"/>
 
@@ -32,13 +32,13 @@
                                  BorderThickness="0"
                                  >
                             <ListBox.Resources>
-                                <ContextMenu x:Key="CMDialog" Width="200">
+                                <ContextMenu x:Key="CmDialog" Width="200">
                                     <MenuItem Header="删除" Click="Delete" Tag="{Binding}"/>
                                 </ContextMenu>
                             </ListBox.Resources>
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="ListBoxItem">
-                                    <Setter Property="ContextMenu" Value="{StaticResource CMDialog}"/>
+                                    <Setter Property="ContextMenu" Value="{StaticResource CmDialog}"/>
                                     <Setter Property="Margin" Value="10"/>
                                     <Setter Property="Effect" Value="{StaticResource EffectShadow2}"/>
                                 </Style>

@@ -15,14 +15,12 @@ namespace GeekDesk.Control.Windows
     /// </summary>
     public partial class ConfigWindow : IWindowCommon
     {
-        private static readonly AboutControl about = new AboutControl();
         private static readonly ThemeControl theme = new ThemeControl();
         private static readonly MotionControl motion = new MotionControl();
         private static readonly OtherControl other = new OtherControl();
         private static List<UserControl> ucList = new List<UserControl>();
         static ConfigWindow()
         {
-            ucList.Add(about);
             ucList.Add(theme);
             ucList.Add(motion);
             ucList.Add(other);
@@ -34,11 +32,11 @@ namespace GeekDesk.Control.Windows
             InitializeComponent();
             //BG.Source = ImageUtil.Base64ToBitmapImage(Constants.DEFAULT_BAC_IMAGE_BASE64);
             this.DataContext = appConfig;
-            RightCard.Content = about;
             WindowUtil.SetOwner(this, mainWindow);
             this.mainWindow = mainWindow;
-            UFG.Visibility = Visibility.Collapsed;
-            UFG.Visibility = Visibility.Visible;
+            Ufg.Visibility = Visibility.Collapsed;
+            RightCard.Content = theme; // 默认显示主题设置
+            Ufg.Visibility = Visibility.Visible;
         }
 
 
@@ -60,24 +58,23 @@ namespace GeekDesk.Control.Windows
             switch (smi.Tag.ToString())
             {
                 case "Motion":
-                    UFG.Visibility = Visibility.Collapsed;
+                    Ufg.Visibility = Visibility.Collapsed;
                     RightCard.Content = motion;
-                    UFG.Visibility = Visibility.Visible;
+                    Ufg.Visibility = Visibility.Visible;
                     break;
                 case "Theme":
-                    UFG.Visibility = Visibility.Collapsed;
+                    Ufg.Visibility = Visibility.Collapsed;
                     RightCard.Content = theme;
-                    UFG.Visibility = Visibility.Visible;
+                    Ufg.Visibility = Visibility.Visible;
                     break;
                 case "Other":
-                    UFG.Visibility = Visibility.Collapsed;
+                    Ufg.Visibility = Visibility.Collapsed;
                     RightCard.Content = other;
-                    UFG.Visibility = Visibility.Visible;
+                    Ufg.Visibility = Visibility.Visible;
                     break;
                 default:
-                    UFG.Visibility = Visibility.Collapsed;
-                    RightCard.Content = about;
-                    UFG.Visibility = Visibility.Visible;
+                    Ufg.Visibility = Visibility.Collapsed;
+                    Ufg.Visibility = Visibility.Visible;
                     break;
             }
         }

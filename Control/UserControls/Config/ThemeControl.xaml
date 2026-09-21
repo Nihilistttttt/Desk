@@ -13,7 +13,7 @@
 
 
     <UserControl.Resources>
-        <cvt:BGStyleConvert x:Key="BGStyleConvert"/>
+        <cvt:BGStyleConvert x:Key="BgStyleConvert"/>
         <cvt:StringAppendConvert x:Key="StringAppendConvert"/>
         <cvt:Visibility2BooleanConverter x:Key="Visibility2BooleanConverter"/>
         <cvt:TextToColorConverter x:Key="TextToColorConverter"/>
@@ -27,13 +27,13 @@
                 <hc:UniformSpacingPanel Spacing="10" Margin="10,5,0,0" Grid.ColumnSpan="4">
                     <RadioButton Margin="10,0,0,0" 
                          Style="{StaticResource MyRadioBtnStyle}" Click="BGStyle_Changed" Content="图 片"
-                         IsChecked="{Binding BGStyle, Mode=TwoWay, Converter={StaticResource BGStyleConvert}, ConverterParameter=1}"/>
+                         IsChecked="{Binding BGStyle, Mode=TwoWay, Converter={StaticResource BgStyleConvert}, ConverterParameter=1}"/>
                     <RadioButton Margin="10,0,0,0" 
                          Style="{StaticResource MyRadioBtnStyle}" Click="BGStyle_Changed" Content="纯 色" 
-                         IsChecked="{Binding BGStyle, Mode=TwoWay, Converter={StaticResource BGStyleConvert}, ConverterParameter=2}"/>
+                         IsChecked="{Binding BGStyle, Mode=TwoWay, Converter={StaticResource BgStyleConvert}, ConverterParameter=2}"/>
                 </hc:UniformSpacingPanel>
 
-                <UniformGrid x:Name="ImgBGConf">
+                <UniformGrid x:Name="ImgBgConf">
                     <hc:TransitioningContentControl TransitionMode="Fade" 
                                                     Height="130">
                         <StackPanel>
@@ -62,7 +62,7 @@
 
                 </UniformGrid>
 
-                <UniformGrid x:Name="GradientBGConf">
+                <UniformGrid x:Name="GradientBgConf">
                     <hc:TransitioningContentControl TransitionMode="Fade" 
                                                     Height="130">
                         <StackPanel>
@@ -217,7 +217,7 @@
                                             >
                         <hc:PreviewSlider Value="{Binding ImageWidth, Mode=TwoWay}"
                                           Minimum="40"
-                                          Maximum="60"
+                                          Maximum="100"
                                           Width="350"
                                           >
                             <hc:PreviewSlider.PreviewContent>

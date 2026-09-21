@@ -6,10 +6,10 @@
         CornerRadius="4"
         Width="350"
         Height="450"
-        Style="{StaticResource BorderBG}"
+        Style="{StaticResource BorderBg}"
         >
     <Border.Resources>
-        <Style x:Key="LeftTB" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBaseStyle}">
+        <Style x:Key="LeftTb" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBaseStyle}">
             <Setter Property="Width" Value="75"/>
             <Setter Property="TextAlignment" Value="Left"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -23,11 +23,11 @@
         <StackPanel>
             <Button Width="22"  Height="22" Command="hc:ControlCommands.Close" Style="{StaticResource ButtonIcon}" Foreground="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}" hc:IconElement.Geometry="{StaticResource ErrorGeometry}" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
             <hc:UniformSpacingPanel Spacing="10" Margin="0,15,0,0">
-                <TextBlock Text="名称:"  Style="{StaticResource LeftTB}"/>
+                <TextBlock Text="名称:"  Style="{StaticResource LeftTb}"/>
                 <TextBox x:Name="IconName" Style="{StaticResource MyTextBoxStyle}" Text="{Binding Name, Mode=OneWay}" Width="230" FontSize="14"/>
             </hc:UniformSpacingPanel>
             <hc:UniformSpacingPanel Spacing="10" Margin="0,15,0,0">
-                <TextBlock Text="相对路径:"  Style="{StaticResource LeftTB}"/>
+                <TextBlock Text="相对路径:"  Style="{StaticResource LeftTb}"/>
                 <TextBlock Text="{Binding RelativePath, Mode=OneWay}" 
                            VerticalAlignment="Center"
                            Margin="0,8,0,0"
@@ -38,7 +38,7 @@
                            hc:Poptip.Content="{Binding RelativePath, Mode=OneWay, Converter={StaticResource StringAppendConvert}, ConverterParameter='\{\}\\\n(同盘符下才会建立相对路径)'}"/>
             </hc:UniformSpacingPanel>
             <hc:UniformSpacingPanel Spacing="10" Grid.ColumnSpan="4" Margin="0,15,0,0">
-                <TextBlock  Text="图标:"  Style="{StaticResource LeftTB}"/>
+                <TextBlock  Text="图标:"  Style="{StaticResource LeftTb}"/>
                 <Image x:Name="IconImg" Source="{Binding BitmapImage, Mode=OneWay}" RenderOptions.BitmapScalingMode="HighQuality" Width="60" Height="60"/>
                 <Button Style="{StaticResource MyBtnStyle}" Content="修改" Click="EditImage"/>
                 <Button Style="{StaticResource MyBtnStyle}" Content="重置" Click="ReStoreImage"/>
@@ -48,7 +48,7 @@
                           Content="始终以管理员方式启动" IsChecked="{Binding AdminStartUp, Mode=OneWay}"/>
             </hc:UniformSpacingPanel>
             <hc:UniformSpacingPanel Spacing="10" Margin="0,15,0,0">
-                <TextBlock Text="启动参数:"  Style="{StaticResource LeftTB}"/>
+                <TextBlock Text="启动参数:"  Style="{StaticResource LeftTb}"/>
                 <TextBox x:Name="StartArg" Style="{StaticResource MyTextBoxStyle}" Text="{Binding StartArg, Mode=OneWay}" Width="230" Height="100" TextWrapping="Wrap" FontSize="14"/>
             </hc:UniformSpacingPanel>
             <hc:UniformSpacingPanel Margin="0,25,0,0" Spacing="10"  Grid.ColumnSpan="4">

@@ -1,26 +1,17 @@
-﻿using DraggAnimatedPanelExample;
-using GeekDesk.Constant;
+﻿using GeekDesk.Constant;
 using GeekDesk.Control.Other;
 using GeekDesk.Control.Windows;
-using GeekDesk.Plugins.EveryThing;
 using GeekDesk.Util;
 using GeekDesk.ViewModel;
-using GeekDesk.ViewModel.Temp;
-using HandyControl.Controls;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Threading;
 namespace GeekDesk.Control.UserControls.PannelCard
 {
     /// <summary>
@@ -41,7 +32,19 @@ namespace GeekDesk.Control.UserControls.PannelCard
         private void RightCardControl_Loaded(object sender, RoutedEventArgs e)
         {
             this.dragMgr = new ListBoxDragDropManager<IconInfo>(this.IconListBox);
+            UpdateDragDropManagerState(); // 初始化拖拽管理器状态
             UpdateCheckBoxVisibility();
+        }
+        /// <summary>
+        /// 更新拖拽管理器状态
+        /// </summary>
+        private void UpdateDragDropManagerState()
+        {
+            if (dragMgr != null)
+            {
+                // 仅在编辑模式下启用拖拽
+                IconListBox.AllowDrop = appData.AppConfig.IconBatch_NoWrite;
+            }
         }
         /// <summary>
         /// 更新所有复选框的可见性
@@ -119,8 +122,6 @@ namespace GeekDesk.Control.UserControls.PannelCard
         /// </summary>
         private void IconClick(object sender, MouseButtonEventArgs e)
         {
-            if (!RunTimeStatus.SEARCH_BOX_HIDED_300) return;
-
             if (appData.AppConfig.DoubleOpen && e.ClickCount >= 2)
             {
                 IconInfo icon = (IconInfo)((Panel)sender).Tag;
@@ -274,6 +275,8 @@ namespace GeekDesk.Control.UserControls.PannelCard
         
             // 更新复选框可见性
             UpdateCheckBoxVisibility();
+            // 更新拖拽管理器状态
+            UpdateDragDropManagerState();
         }
         /// <summary>
         /// 弹出Icon属性修改面板
@@ -295,6 +298,8 @@ namespace GeekDesk.Control.UserControls.PannelCard
                     break;
             }
             UpdateCheckBoxVisibility();
+            // 更新拖拽管理器状态
+            UpdateDragDropManagerState();
         }
 
         /// <summary>
@@ -305,6 +310,8 @@ namespace GeekDesk.Control.UserControls.PannelCard
             IconInfo info = (IconInfo)((MenuItem)sender).Tag;
             PropertyConfig(sender, e);
             UpdateCheckBoxVisibility();
+            // 更新拖拽管理器状态
+            UpdateDragDropManagerState();
         }
 
         private void MenuIcon_MouseEnter(object sender, MouseEventArgs e)
@@ -484,17 +491,7 @@ namespace GeekDesk.Control.UserControls.PannelCard
                 WrapCard.Visibility = Visibility.Visible;
             }
         }
-
-        /// <summary>
-        /// 搜索Card点击事件
-        /// </summary>
-        private void VerticalCard_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (RunTimeStatus.SEARCH_BOX_SHOW)
-            {
-                MainWindow.mainWindow.HidedSearchBox();
-            }
-        }
+        
 
         /// <summary>
         /// 设置光标
@@ -524,31 +521,11 @@ namespace GeekDesk.Control.UserControls.PannelCard
         {
             if (RunTimeStatus.LOCK_APP_PANEL)
             {
-                CardLockCM.Header = "解锁主面板";
+                CardLockCm.Header = "解锁主面板";
             }
             else
             {
-                CardLockCM.Header = "锁定主面板";
-            }
-        }
-
-        private void PDDialog_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            if (PDDialog.Visibility == Visibility.Visible)
-            {
-                RunTimeStatus.SHOW_MENU_PASSWORDBOX = true;
-                PDDialog.ClearVal();
-                PDDialog.ErrorMsg.Visibility = Visibility.Collapsed;
-                PDDialog.PasswordGrid.Visibility = Visibility.Visible;
-                PDDialog.HintGrid.Visibility = Visibility.Collapsed;
-                PDDialog.count = 0;
-                PDDialog.SetFocus();
-            }
-            else
-            {
-                RunTimeStatus.SHOW_MENU_PASSWORDBOX = false;
-                PDDialog.ClearVal();
-                MainWindow.mainWindow.Focus();
+                CardLockCm.Header = "锁定主面板";
             }
         }
 
@@ -711,6 +688,8 @@ namespace GeekDesk.Control.UserControls.PannelCard
             appData.AppConfig.IconBatch_NoWrite = !appData.AppConfig.IconBatch_NoWrite;
             IconListBox.SelectionMode = SelectionMode.Multiple;
             UpdateCheckBoxVisibility();
+            // 更新拖拽管理器状态
+            UpdateDragDropManagerState();
         }
 
         /// <summary>

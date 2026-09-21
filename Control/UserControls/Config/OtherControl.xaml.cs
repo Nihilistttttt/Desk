@@ -1,6 +1,4 @@
 ﻿using GeekDesk.Constant;
-using GeekDesk.MyThread;
-using GeekDesk.Plugins.EveryThing;
 using GeekDesk.Util;
 using GeekDesk.ViewModel;
 using ShowSeconds;
@@ -120,6 +118,24 @@ namespace GeekDesk.Control.UserControls.Config
             CommonCode.BakAppData();
         }
 
+        private void ImportDataFile(object sender, RoutedEventArgs e)
+        {
+            CommonCode.ImportBakAppData();
+        }
+
+        private void ResetConfigFile(object sender, RoutedEventArgs e)
+        {
+            bool confirmed = HandyControl.Controls.MessageBox.Show(
+                "确定要重置所有配置吗？\n\n此操作将清空全部自定义设置和图标列表, 恢复为默认状态, 且不可撤销！",
+                "重置配置确认",
+                MessageBoxButton.OKCancel,
+                MessageBoxImage.Warning) == MessageBoxResult.OK;
+            if (confirmed)
+            {
+                CommonCode.ResetAppData();
+            }
+        }
+
         private void ShowSeconds_Click(object sender, RoutedEventArgs e)
         {
             if (MainWindow.appData.AppConfig.SecondsWindow == true)
@@ -185,22 +201,6 @@ namespace GeekDesk.Control.UserControls.Config
                 }
             }
             catch (Exception ex) { }
-        }
-
-        /// <summary>
-        /// EveryThing插件开关
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void EveryThing_Changed(object sender, RoutedEventArgs e)
-        {
-            if (MainWindow.appData.AppConfig.EnableEveryThing == true)
-            {
-                EveryThingUtil.EnableEveryThing(0);
-            } else
-            {
-                EveryThingUtil.DisableEveryThing(true);
-            }
         }
     }
 }

@@ -42,7 +42,7 @@
             <DropShadowEffect BlurRadius="30" Direction="-90" Color="Gray"
                               RenderingBias="Quality" ShadowDepth="2"/>
         </Grid.Effect>
-        <Border MouseDown="DragMove" Style="{StaticResource BorderBG}"  hc:Dialog.Token="IconUrlDialog">
+        <Border MouseDown="DragMove" Style="{StaticResource BorderBg}"  hc:Dialog.Token="IconUrlDialog">
             <hc:DialogContainer>
                 <Grid MouseDown="DragMove">
                     <StackPanel HorizontalAlignment="Center" Margin="10">

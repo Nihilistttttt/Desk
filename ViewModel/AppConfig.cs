@@ -29,7 +29,7 @@ namespace GeekDesk.ViewModel
         private bool followMouse = false;  //面板跟随鼠标 默认是
         private Visibility configIconVisible = Visibility.Visible; // 设置按钮是否显示
         private Visibility titleLogoVisible = Visibility.Hidden; // 标题logo是否显示
-        private AppHideType appHideType = AppHideType.LOST_FOCUS;  //面板关闭方式 (默认启动程序后)
+        private AppHideType appHideType = AppHideType.START_EXE;  //面板关闭方式 (默认启动程序后)
         private bool startedShowPanel = true;  //启动时是否显示主面板  默认显示
         [field: NonSerialized]
         private BitmapImage bitmapImage; //位图
@@ -42,14 +42,10 @@ namespace GeekDesk.ViewModel
         [field: NonSerialized]
         private ObservableCollection<IconInfo> selectedMenuIcons;
 
-        private string hotkeyStr = "Ctrl + Q";  //默认启动面板快捷键
+        private string hotkeyStr = "Ctrl + Shift + Alt + F9";  //默认启动面板快捷键
         private HotkeyModifiers hotkeyModifiers = HotkeyModifiers.MOD_CONTROL; //默认启动面板快捷键
         private Key hotkey = Key.Q; //默认启动面板快捷键
-
-        private string toDoHotkeyStr = "Ctrl + Shift + Q";  //待办任务快捷键
-        private HotkeyModifiers toDoHotkeyModifiers; //待办任务快捷键
-        private Key toDoHotkey = Key.Q; //待办任务快捷键
-
+        
 
         private string colorPickerHotkeyStr = ""; //拾色器快捷键
         private HotkeyModifiers colorPickerHotkeyModifiers; //拾色器快捷键
@@ -61,11 +57,10 @@ namespace GeekDesk.ViewModel
         private bool blurEffect = true; //毛玻璃效果 默认是
         private double blurValue;
 
-        private UpdateType updateType = UpdateType.Gitee; //更新源 默认gitee源
 
         private bool selfStartUp = true; //开机自启动设置
         private bool selfStartUped = false;  //是否已设置
-        private bool pmModel = false; //性能模式
+        private bool pmModel = true; //性能模式
         private string textColor = "#FFFFFF"; //字体颜色
         private double imgPanelWidth = (double)CommonEnum.IMAGE_PANEL_WIDTH;
         private double imgPanelHeight = (double)CommonEnum.IMAGE_PANEL_HEIGHT;
@@ -87,25 +82,17 @@ namespace GeekDesk.ViewModel
         private GradientBGParam gradientBGParam = null; //渐变背景参数
 
         private bool? enableAppHotKey = true;  //可能为null 开启热键
-        private bool? enableTodoHotKey = true; //可能为null 开启待办热键
 
         private bool enableColorPickerHotKey;  //新增 默认为false 不需要考虑null值
 
-        private SearchType searchType;
-
         private string sysBakTime;  //系统自动备份时间
 
-        private string menuPassword; //锁菜单密码
-
-        private string passwordHint; //密码提示
 
         private bool? isShow;
 
         private bool itemSpradeAnimation; //列表展开动画
 
         private bool? secondsWindow; //秒数窗口 默认打开
-
-        private bool? enableEveryThing; //开启everything
 
         private bool? alwaysTopmost; //是否置顶
 
@@ -174,20 +161,6 @@ namespace GeekDesk.ViewModel
             }
         }
 
-        public bool? EnableEveryThing
-        {
-            get
-            {
-                if (enableEveryThing == null) enableEveryThing = false;
-                return enableEveryThing;
-            }
-            set
-            {
-                enableEveryThing = value;
-                OnPropertyChanged("EnableEveryThing");
-            }
-        }
-
         #region GetSet
 
         public bool? SecondsWindow
@@ -230,31 +203,6 @@ namespace GeekDesk.ViewModel
             }
         }
 
-        public string PasswordHint
-        {
-            get
-            {
-                return passwordHint;
-            }
-            set
-            {
-                passwordHint = value;
-                OnPropertyChanged("PasswordHint");
-            }
-        }
-        public string MenuPassword
-        {
-            get
-            {
-                return menuPassword;
-            }
-            set
-            {
-                menuPassword = value;
-                OnPropertyChanged("MenuPassword");
-            }
-        }
-
         public string SysBakTime
         {
             get
@@ -266,19 +214,7 @@ namespace GeekDesk.ViewModel
                 sysBakTime = value;
             }
         }
-
-        public SearchType SearchType
-        {
-            get
-            {
-                return searchType;
-            }
-            set
-            {
-                searchType = value;
-                OnPropertyChanged("SearchType");
-            }
-        }
+        
 
         public bool EnableColorPickerHotKey
         {
@@ -304,20 +240,6 @@ namespace GeekDesk.ViewModel
             {
                 enableAppHotKey = value;
                 OnPropertyChanged("EnableAppHotKey");
-            }
-        }
-
-        public bool? EnableTodoHotKey
-        {
-            get
-            {
-                if (enableTodoHotKey == null) enableTodoHotKey = true;
-                return enableTodoHotKey;
-            }
-            set
-            {
-                enableTodoHotKey = value;
-                OnPropertyChanged("EnableTodoHotKey");
             }
         }
 
@@ -652,73 +574,6 @@ namespace GeekDesk.ViewModel
             }
         }
 
-
-        public Key ToDoHotkey
-        {
-            get
-            {
-                //兼容老版本
-                if (toDoHotkey == Key.None)
-                {
-                    toDoHotkey = Key.E;
-                }
-                return toDoHotkey;
-            }
-            set
-            {
-                toDoHotkey = value;
-                OnPropertyChanged("ToDoHotkey");
-            }
-        }
-
-
-        public HotkeyModifiers ToDoHotkeyModifiers
-        {
-            get
-            {
-                if (toDoHotkeyModifiers == 0)
-                {
-                    toDoHotkeyModifiers = HotkeyModifiers.MOD_CONTROL | HotkeyModifiers.MOD_SHIFT;
-                }
-                return toDoHotkeyModifiers;
-            }
-            set
-            {
-                toDoHotkeyModifiers = value;
-                OnPropertyChanged("ToDoHotkeyModifiers");
-            }
-        }
-
-        public string ToDoHotkeyStr
-        {
-            get
-            {
-                //兼容老版本
-                if (toDoHotkeyStr == null)
-                {
-                    toDoHotkeyStr = "Ctrl + Shift + Q";
-                }
-                return toDoHotkeyStr;
-            }
-            set
-            {
-                toDoHotkeyStr = value;
-                OnPropertyChanged("ToDoHotkeyStr");
-            }
-        }
-
-        public UpdateType UpdateType
-        {
-            get
-            {
-                return updateType;
-            }
-            set
-            {
-                updateType = value;
-                OnPropertyChanged("UpdateType");
-            }
-        }
 
         public double BlurValue
         {

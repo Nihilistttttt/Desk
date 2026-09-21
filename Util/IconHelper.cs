@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace GeekDesk.Util
 {
@@ -12,11 +9,11 @@ namespace GeekDesk.Util
         [DllImport("Shell32.dll")]
         private static extern IntPtr SHGetFileInfo
         (
-            string pszPath, //Ò»¸ö°üº¬ÒªÈ¡µÃÐÅÏ¢µÄÎÄ¼þÏà¶Ô»ò¾ø¶ÔÂ·¾¶µÄ»º³å¡£Ëü¿ÉÒÔ´¦Àí³¤»ò¶ÌÎÄ¼þÃû¡££¨Ò²¾ÍÊÇÖ¸¶¨µÄÎÄ¼þÂ·¾¶£©×¢[1]
-            uint dwFileAttributes,//×ÊÁÏÉÏËµ£¬Õâ¸ö²ÎÊý½öÓÃÓÚuFlagsÖÐ°üº¬SHGFI_USEFILEATTRIBUTES±êÖ¾µÄÇé¿ö(Ò»°ã²»Ê¹ÓÃ)¡£Èç´Ë£¬ËüÓ¦¸ÃÊÇÎÄ¼þÊôÐÔµÄ×éºÏ£º´æµµ£¬Ö»¶Á£¬Ä¿Â¼£¬ÏµÍ³µÈ¡£
+            string pszPath, //Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÒªÈ¡ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ô»ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½Ä»ï¿½ï¿½å¡£ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½Â·ï¿½ï¿½ï¿½ï¿½×¢[1]
+            uint dwFileAttributes,//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½uFlagsï¿½Ð°ï¿½ï¿½ï¿½SHGFI_USEFILEATTRIBUTESï¿½ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½ï¿½(Ò»ï¿½ã²»Ê¹ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½Ë£ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½Ï£ï¿½ï¿½æµµï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½Ä¿Â¼ï¿½ï¿½ÏµÍ³ï¿½È¡ï¿½
             out SHFILEINFO psfi,
-            uint cbfileInfo,//¼òµ¥µØ¸ø³öÉÏÏî½á¹¹µÄ³ß´ç¡£
-            SHGFI uFlags//º¯ÊýµÄºËÐÄ±äÁ¿£¬Í¨¹ýËùÓÐ¿ÉÄÜµÄ±êÖ¾£¬Äã¾ÍÄÜ¼ÝÔ¦º¯ÊýµÄÐÐÎªºÍÊµ¼ÊµØµÃµ½ÐÅÏ¢¡£
+            uint cbfileInfo,//ï¿½òµ¥µØ¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á¹¹ï¿½Ä³ß´ç¡£
+            SHGFI uFlags//ï¿½ï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½Ð¿ï¿½ï¿½ÜµÄ±ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¼ï¿½Ô¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Êµï¿½ÊµØµÃµï¿½ï¿½ï¿½Ï¢ï¿½ï¿½
         );
 
 
@@ -27,13 +24,13 @@ namespace GeekDesk.Util
             {
                 hIcon = IntPtr.Zero; iIcon = 0; dwAttributes = 0; szDisplayName = ""; szTypeName = "";
             }
-            public IntPtr hIcon;//Í¼±ê¾ä±ú
-            public int iIcon;//ÏµÍ³Í¼±êÁÐ±íµÄË÷Òý
-            public uint dwAttributes; //ÎÄ¼þµÄÊôÐÔ
+            public IntPtr hIcon;//Í¼ï¿½ï¿½ï¿½ï¿½
+            public int iIcon;//ÏµÍ³Í¼ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            public uint dwAttributes; //ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             [MarshalAs(UnmanagedType.LPStr, SizeConst = 260)]
-            public string szDisplayName;//ÎÄ¼þµÄÂ·¾¶µÈ ÎÄ¼þÃû×î³¤256£¨ANSI£©£¬¼ÓÉÏÅÌ·û£¨X:\£©3×Ö½Ú£¬259×Ö½Ú£¬ÔÙ¼ÓÉÏ½áÊø·û1×Ö½Ú£¬¹²260
+            public string szDisplayName;//ï¿½Ä¼ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½î³¤256ï¿½ï¿½ANSIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì·ï¿½ï¿½ï¿½X:\ï¿½ï¿½3ï¿½Ö½Ú£ï¿½259ï¿½Ö½Ú£ï¿½ï¿½Ù¼ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½1ï¿½Ö½Ú£ï¿½ï¿½ï¿½260
             [MarshalAs(UnmanagedType.LPStr, SizeConst = 80)]
-            public string szTypeName;//ÎÄ¼þµÄÀàÐÍÃû ¹Ì¶¨80×Ö½Ú
+            public string szTypeName;//ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¶ï¿½80ï¿½Ö½ï¿½
         };
 
 
@@ -50,10 +47,10 @@ namespace GeekDesk.Util
         }
 
         /// <summary>
-        /// ¸ù¾ÝÎÄ¼þÀ©Õ¹ÃûµÃµ½ÏµÍ³À©Õ¹ÃûµÄÍ¼±ê
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½ï¿½Ãµï¿½ÏµÍ³ï¿½ï¿½Õ¹ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
         /// </summary>
-        /// <param name="fileName">ÎÄ¼þÃû(Èç£ºwin.rar;setup.exe;temp.txt)</param>
-        /// <param name="largeIcon">Í¼±êµÄ´óÐ¡</param>
+        /// <param name="fileName">ï¿½Ä¼ï¿½ï¿½ï¿½(ï¿½ç£ºwin.rar;setup.exe;temp.txt)</param>
+        /// <param name="largeIcon">Í¼ï¿½ï¿½Ä´ï¿½Ð¡</param>
         /// <returns></returns>
         public static Icon GetFileIcon(string fileName, bool largeIcon)
         {
@@ -71,9 +68,9 @@ namespace GeekDesk.Util
         }
 
         /// <summary>  
-        /// »ñÈ¡ÎÄ¼þ¼ÐÍ¼±ê
+        /// ï¿½ï¿½È¡ï¿½Ä¼ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
         /// </summary>  
-        /// <returns>Í¼±ê</returns>  
+        /// <returns>Í¼ï¿½ï¿½</returns>  
         public static Icon GetDirectoryIcon(string path, bool largeIcon)
         {
             SHFILEINFO _SHFILEINFO = new SHFILEINFO();

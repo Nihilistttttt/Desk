@@ -46,11 +46,7 @@ namespace GeekDesk.Util
                         BinaryFormatter bf = new BinaryFormatter();
                         appData = bf.Deserialize(fs) as AppData;
 
-                        //将菜单密码写入文件
-                        if (!string.IsNullOrEmpty(appData.AppConfig.MenuPassword))
-                        {
-                            SavePassword(appData.AppConfig.MenuPassword);
-                        }
+
                         return appData;
                     }
                 }
@@ -177,13 +173,6 @@ namespace GeekDesk.Util
         }
 
 
-        public static void SavePassword(string password)
-        {
-            using (StreamWriter sw = new StreamWriter(Constants.PW_FILE_BAK_PATH))
-            {
-                sw.Write(password);
-            }
-        }
 
         private static string GeneraterUUID()
         {
@@ -238,6 +227,54 @@ namespace GeekDesk.Util
                     bf.Serialize(fs, MainWindow.appData);
                 }
             }
+        }
+
+
+        /// <summary>
+        /// 导入备份文件: 选择 .bak -> 反序列化为 AppData -> 覆盖当前 Data -> 重启程序
+        /// </summary>
+        public static void ImportBakAppData()
+        {
+            OpenFileDialog ofd = new OpenFileDialog
+            {
+                Title = "选择备份文件",
+                Filter = "bak文件(*.bak)|*.bak",
+            };
+            if (ofd.ShowDialog() == true)
+            {
+                AppData newData = null;
+                try
+                {
+                    using (FileStream fs = new FileStream(ofd.FileName, FileMode.Open))
+                    {
+                        BinaryFormatter bf = new BinaryFormatter();
+                        newData = bf.Deserialize(fs) as AppData;
+                    }
+                }
+                catch (Exception) { }
+
+                if (newData == null)
+                {
+                    HandyControl.Controls.Growl.WarningGlobal("备份文件损坏或格式不匹配, 无法导入!");
+                    return;
+                }
+
+                SaveAppData(newData, Constants.DATA_FILE_PATH);
+                HandyControl.Controls.Growl.SuccessGlobal("导入成功, 程序将重启以应用新数据!");
+                ProcessUtil.ReStartApp();
+            }
+        }
+
+
+        /// <summary>
+        /// 重置配置: 用默认 AppData 覆盖当前 Data 文件 -> 重启程序
+        /// </summary>
+        public static void ResetAppData()
+        {
+            AppData defaultData = new AppData();
+            SaveAppData(defaultData, Constants.DATA_FILE_PATH);
+            HandyControl.Controls.Growl.SuccessGlobal("已重置为默认配置, 程序将重启!");
+            ProcessUtil.ReStartApp();
         }
 
 

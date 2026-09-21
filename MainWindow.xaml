@@ -20,21 +20,20 @@
         AllowsTransparency="True"
         Background="Transparent"
         ShowInTaskbar="False"
+        ShowActivated="False"
         Opacity="1"
         Deactivated="AppWindow_Deactivated"
         SizeChanged="Window_SizeChanged"
         PreviewKeyDown="OnKeyDown"
         Focusable="True"
-        MouseDown="MainWindow_MouseDown"
         MouseEnter="MainWindow_MouseEnter"
-        GotFocus="Window_GotFocus"
         Loaded="Window_Loaded"   
         SourceInitialized="Window_SourceInitialized"
         Topmost="{Binding AppConfig.AlwaysTopmost}"
         >
 
     <Window.Resources>
-        <RoutedUICommand x:Key="SearchHotKeyDown" Text="SearchHotKeyDown"/>
+        <!-- <RoutedUICommand x:Key="SearchHotKeyDown" Text="SearchHotKeyDown"/> -->
         <cvt:MenuWidthConvert x:Key="MenuWidthConvert"/>
         <cvt:OpcityConvert x:Key="OpcityConvert"/>
         <cvt:IntToCornerRadius x:Key="IntToCornerRadius"/>
@@ -46,102 +45,12 @@
         <WindowChrome CaptionHeight="0" CornerRadius="30" ResizeBorderThickness="23"/>
     </WindowChrome.WindowChrome>
 
-    <Window.InputBindings>
-        <KeyBinding Gesture="Ctrl+F" Key="F"  Command="{StaticResource SearchHotKeyDown}"/>
-    </Window.InputBindings>
-    <Window.CommandBindings>
-        <CommandBinding Command="{StaticResource SearchHotKeyDown}" CanExecute="SearchHotKeyDown"/>
-    </Window.CommandBindings>
-
-    <!--Opacity="{Binding AppConfig.PannelOpacity, Mode=TwoWay, Converter={StaticResource OpcityConvert}}"-->
     <Grid>
-        <!--遮罩层border 用于引导提示-->
-        <Border Margin="20"
-                Visibility="Collapsed"
-                MouseDown="DragMove"
-                CornerRadius="{Binding AppConfig.PannelCornerRadius, Mode=OneWay, Converter={StaticResource IntToCornerRadius}}"
-                BorderThickness="0"
-                x:Name="GrayBorder"
-                Panel.ZIndex="888"
-                >
-            <Border.Background>
-                <SolidColorBrush Color="Gray" Opacity="0.9"/>
-            </Border.Background>
-            
-            <!--<hc:Poptip.Instance>
-                <hc:Poptip  PlacementType="Top" IsOpen="False" HitMode="None">
-                    <hc:Poptip.ContentTemplate>
-                        <DataTemplate>
-                            <Border Background="White" Width="300" Height="150">
-                                <TextBlock Text="这是一个测测试"/>
-                            </Border>
-                        </DataTemplate>
-                    </hc:Poptip.ContentTemplate>
-                </hc:Poptip>
-            </hc:Poptip.Instance>-->
-        </Border>
-
-        <hc:Card x:Name="GuideCard" Width="300" Height="180" Panel.ZIndex="888" 
-                 VerticalAlignment="Top"
-                 HorizontalAlignment="Left" Visibility="Collapsed">
-            <hc:Card.Background>
-                <SolidColorBrush Color="White" Opacity="0.85"/>
-            </hc:Card.Background>
-            <!--Card 的内容部分-->
-            <Border CornerRadius="4,4,0,0" Width="300" Height="100">
-                <TextBlock TextWrapping="Wrap" 
-                           x:Name="GuideText"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"
-                           LineHeight="22"
-                           FontSize="14"
-                           Text=""/>
-            </Border>
-            <!--Card 的尾部部分-->
-            <hc:Card.Footer>
-                <Grid>
-                    <StackPanel Margin="10" Width="150" Height="50" HorizontalAlignment="Left">
-                        <!--Card 的一级内容-->
-                        <WrapPanel>
-                            <TextBlock TextWrapping="Wrap"  
-                                   x:Name="GuideTitle1"
-                                   Style="{DynamicResource TextBlockLargeBold}" 
-                                   TextTrimming="CharacterEllipsis" 
-                                   Text="引导提示" 
-                                   FontSize="20"
-                                   HorizontalAlignment="Left"/>
-                            <TextBlock TextWrapping="Wrap"
-                                       x:Name="GuideNum"
-                                   Style="{DynamicResource TextBlockLargeBold}" 
-                                   TextTrimming="CharacterEllipsis" 
-                                   Text="1" 
-                                   FontSize="20"
-                                   HorizontalAlignment="Left"/>
-                        </WrapPanel>
-                        <!--Card 的二级内容-->
-                        <TextBlock TextWrapping="NoWrap" 
-                                   x:Name="GuideTitle2"
-                               Style="{DynamicResource TextBlockDefault}" 
-                               TextTrimming="CharacterEllipsis" 
-                               Text="快捷方式创建" 
-                               Margin="0,6,0,0"
-                               FontSize="14"
-                               HorizontalAlignment="Left"/>
-                    </StackPanel>
-                    <hc:UniformSpacingPanel HorizontalAlignment="Right">
-                        <Button Style="{StaticResource MyBtnStyle}" x:Name="PreviewGuideBtn" Click="PreviewGuideBtn_Click" Margin="0,0,20,0" Content="上一步"/>
-                        <Button Style="{StaticResource MyBtnStyle}" x:Name="NextGuideBtn" Click="NextGuideBtn_Click" Margin="0,0,20,0" Content="下一步"/>
-                    </hc:UniformSpacingPanel>
-                </Grid>
-            </hc:Card.Footer>
-        </hc:Card>
-
-
         <Border Margin="-10,20,-10,20" CornerRadius="{Binding AppConfig.PannelCornerRadius, Mode=TwoWay, Converter={StaticResource IntToCornerRadius}}"  
             BorderThickness="0"
             Focusable="True"
                 Panel.ZIndex="1"
-            x:Name="BGBorder"
+            x:Name="BgBorder"
                 Background="AliceBlue"
             hc:Dialog.Token="MainWindowDialog"
             xf:Animations.Primary="{xf:Animate BasedOn={StaticResource FadeInAndGrowHorizontally}, Event=None}"
@@ -151,10 +60,12 @@
             xf:Animations.SecondaryCompletionCommand="{Binding HideCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
             xf:Animations.AllowOpacityReset="False"
             >
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="30" Direction="-90" Color="Gray"
+                              RenderingBias="Quality" ShadowDepth="2"/>
+            </Border.Effect>
             <hc:DialogContainer Focusable="True">
                 <Grid>
-
-
                     <Grid.RowDefinitions>
                         <RowDefinition Height="40" MouseDown="DragMove"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
@@ -163,10 +74,7 @@
                         <ColumnDefinition x:Name="LeftColumn" MinWidth="80" Width="{Binding AppConfig.MenuCardWidth, Mode=TwoWay, Converter={StaticResource DoubleToGridLength}}" MaxWidth="280"></ColumnDefinition>
                         <ColumnDefinition x:Name="RightColumn" Width="*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-
-
-
-
+                    
                     <CheckBox Style="{StaticResource MyCheckBoxStyle}" x:Name="ShowBox" Visibility="Hidden" Panel.ZIndex="2"/>
                     <CheckBox Style="{StaticResource MyCheckBoxStyle}" x:Name="HideBox" Visibility="Hidden" Panel.ZIndex="2"/>
 
@@ -207,8 +115,6 @@
                                 <Button.ContextMenu>
                                     <ContextMenu x:Name="SettingMenus" Width="130">
                                         <MenuItem Header="设置" Click="ConfigMenuClick"/>
-                                        <MenuItem Header="待办" Click="BacklogMenuClick"/>
-                                        <MenuItem Header="新手引导" Click="Guide_Click"/>
                                     </ContextMenu>
                                 </Button.ContextMenu>
                             </Button>
@@ -225,58 +131,12 @@
                         </hc:UniformSpacingPanel>
                     </DockPanel>
 
-
                     <uc:LeftCardControl x:Name="LeftCard" Grid.Row="1" Grid.Column="0" Visibility="Collapsed"/>
 
                     <!--分割线-->
                     <GridSplitter Opacity="0" Grid.Row="1" Grid.Column="0" Width="5"  VerticalAlignment="Stretch" HorizontalAlignment="Right"/>
 
-                    <Border x:Name="SearchResContainer" Panel.ZIndex="2" 
-                        Visibility="Collapsed"
-                        Grid.Row="1" Grid.Column="1" 
-                        HorizontalAlignment="Right" MaxWidth="200" 
-                        VerticalAlignment="Top"
-                        CornerRadius="8"
-                        Margin="0,20,40,0"
-                        >
-                        <Border.Style>
-                            <Style TargetType="Border" >
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <SolidColorBrush Color="White" Opacity="0.6"/>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="MaxWidth" Value="300"/>
-                            </Style>
-                        </Border.Style>
-                        <WrapPanel Margin="8">
-                            <TextBlock Opacity="0.6" Text="g:"/>
-                            <TextBlock x:Name="GeekDeskSearchTotal" Opacity="0.6" Text="0"/>
-                            <TextBlock Opacity="0.6" Text="+"/>
-                            <TextBlock Opacity="0.6" Text="e:"/>
-                            <TextBlock x:Name="EverythingSearchCount" Opacity="0.6" Text="0"/>
-                            <TextBlock Opacity="0.6" Text=" of "/>
-                            <TextBlock x:Name="EverythingSearchTotal" Opacity="0.6" Text="0"/>
-                        </WrapPanel>
-                    </Border>
-
-                    <!--搜索输入框-->
-                    <TextBox Panel.ZIndex="2" Grid.Row="0" Grid.Column="1" 
-                             x:Name="SearchBox"
-                             Width="0"
-                             Margin="-100,5,0,0"
-                             Height="32"
-                             FontSize="16"
-                             BorderThickness="0"
-                             TextChanged="SearchBox_TextChanged"
-                             Style="{StaticResource MyTextBoxStyle}"
-                             >
-                        <TextBox.Background>
-                            <SolidColorBrush Color="White" Opacity="0.5" />
-                        </TextBox.Background>
-                    </TextBox>
-
-
+                    
                     <hc:NotifyIcon Icon="/Logo.ico" Click="NotifyIcon_Click" x:Name="BarIcon"
                             Visibility="{Binding AppConfig.ShowBarIcon, Mode=TwoWay, Converter={StaticResource Boolean2VisibilityConverter}}">
                         <hc:NotifyIcon.ContextMenu>
@@ -284,8 +144,9 @@
                                 <MenuItem Header="打开面板" Click="ShowApp"/>
                                 <MenuItem Header="拾色器" Click="ColorPicker"/>
                                 <MenuItem Header="备份" Click="BakDataFile"/>
+                                <MenuItem Header="导入备份" Click="ImportDataFile"/>
+                                <MenuItem Header="重置配置" Click="ResetConfigFile"/>
                                 <MenuItem Header="隐藏图标" Click="CloseBarIcon"/>
-                                <MenuItem Header="待办"  Click="BacklogMenuClick"/>
                                 <MenuItem Header="程序目录"  Click="OpenThisDir"/>
                                 <MenuItem Header="设置"  Click="ConfigApp"/>
                                 <MenuItem Header="重启"  Click="ReStartApp"/>
@@ -301,7 +162,5 @@
                 </Grid>
             </hc:DialogContainer>
         </Border>
-
     </Grid>
-
 </Window>

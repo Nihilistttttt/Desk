@@ -88,9 +88,7 @@
     <Reference Include="HandyControl, Version=3.5.1.0, Culture=neutral, PublicKeyToken=45be8712787a1e5b, processorArchitecture=MSIL">
       <HintPath>packages\HandyControl.3.5.1\lib\net472\HandyControl.dll</HintPath>
     </Reference>
-    <Reference Include="KeyMouseHook, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\KeyMouseHook.1.0.6\lib\net40\KeyMouseHook.dll</HintPath>
-    </Reference>
+
     <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=2.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Extensions.Logging.Abstractions.2.1.1\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
     </Reference>
@@ -100,9 +98,7 @@
     <Reference Include="NPinyin.Core, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\NPinyin.Core.3.0.0\lib\net45\NPinyin.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Quartz, Version=3.3.3.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
-      <HintPath>packages\Quartz.3.3.3\lib\net472\Quartz.dll</HintPath>
-    </Reference>
+
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -136,8 +132,7 @@
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
+
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -174,19 +169,12 @@
     <Compile Include="Constant\CommonEnum.cs" />
     <Compile Include="Constant\IconStartType.cs" />
     <Compile Include="Constant\MenuType.cs" />
-    <Compile Include="Constant\PasswordType.cs" />
     <Compile Include="Constant\RunTimeStatus.cs" />
-    <Compile Include="Constant\SearchType.cs" />
     <Compile Include="Constant\SortType.cs" />
-    <Compile Include="Constant\TodoTaskExecType.cs" />
     <Compile Include="Constant\BGStyle.cs" />
-    <Compile Include="Constant\UpdateType.cs" />
     <Compile Include="Constant\WidthTypeEnum.cs" />
     <Compile Include="Control\Other\GlobalMsgNotification.xaml.cs">
       <DependentUpon>GlobalMsgNotification.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Control\Other\BacklogNotificatin.xaml.cs">
-      <DependentUpon>BacklogNotificatin.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\Other\CustomIconUrlDialog.xaml.cs">
       <DependentUpon>CustomIconUrlDialog.xaml</DependentUpon>
@@ -197,26 +185,17 @@
     <Compile Include="Control\Other\BGNmaeDialog.xaml.cs">
       <DependentUpon>BGNmaeDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\Other\PasswordDialog.xaml.cs">
-      <DependentUpon>PasswordDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Control\Other\MyColorPickerDialog.xaml.cs">
       <DependentUpon>MyColorPickerDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\Other\IconInfoUrlDialog.xaml.cs">
       <DependentUpon>IconInfoUrlDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\Other\SearchResControl.xaml.cs">
-      <DependentUpon>SearchResControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Control\UserControls\Config\OtherControl.xaml.cs">
       <DependentUpon>OtherControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\UserControls\SystemItem\SystemItem.xaml.cs">
       <DependentUpon>SystemItem.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Control\UserControls\ToDo\TodoControl.xaml.cs">
-      <DependentUpon>TodoControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\UserControls\IconFont\IconPannel.xaml.cs">
       <DependentUpon>IconPannel.xaml</DependentUpon>
@@ -230,20 +209,11 @@
     <Compile Include="Control\Windows\SystemItemWindow.xaml.cs">
       <DependentUpon>SystemItemWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\Windows\ToDoInfoWindow.xaml.cs">
-      <DependentUpon>ToDoInfoWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Control\Windows\ToDoWindow.xaml.cs">
-      <DependentUpon>ToDoWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Control\Windows\ConfigWindow.xaml.cs">
       <DependentUpon>ConfigWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\Other\IconInfoDialog.xaml.cs">
       <DependentUpon>IconInfoDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Control\UserControls\Config\AboutControl.xaml.cs">
-      <DependentUpon>AboutControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\UserControls\PannelCard\LeftCardControl.xaml.cs">
       <DependentUpon>LeftCardControl.xaml</DependentUpon>
@@ -260,24 +230,16 @@
     <Compile Include="Control\Windows\IconfontWindow.xaml.cs">
       <DependentUpon>IconfontWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\Windows\UpdateWindow.xaml.cs">
-      <DependentUpon>UpdateWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Converts\ValueConvert.cs" />
-    <Compile Include="Converts\CountGreZero2BoolConvert.cs" />
-    <Compile Include="Converts\Count2VisibleConvert.cs" />
+
     <Compile Include="Converts\GetWidthByWWConvert.cs" />
-    <Compile Include="Converts\SearchTypeConvert.cs" />
     <Compile Include="Converts\StringAppendConvert.cs" />
     <Compile Include="Converts\DoubleToGridLength.cs" />
     <Compile Include="Converts\MenuInfoConvert.cs" />
-    <Compile Include="Converts\SearchResWidth.cs" />
     <Compile Include="Converts\SortTypeConvert.cs" />
-    <Compile Include="Converts\TodoTaskExecConvert.cs" />
     <Compile Include="Converts\IntToCornerRadius.cs" />
     <Compile Include="Converts\OpcityConvert.cs" />
     <Compile Include="Converts\BGStyleConvert.cs" />
-    <Compile Include="Converts\UpdateTypeConvert.cs" />
     <Compile Include="Converts\ReverseBoolConvert.cs" />
     <Compile Include="Converts\Boolean2VisibilityConverter.cs" />
     <Compile Include="Converts\TextToColorConverter.cs" />
@@ -287,23 +249,17 @@
     <Compile Include="Converts\HideTypeConvert.cs" />
     <Compile Include="Interface\IWindowCommon.cs" />
     <Compile Include="MyThread\RelativePathThread.cs" />
-    <Compile Include="Plugins\EveryThing\Constant\EveryThingConst.cs" />
-    <Compile Include="Plugins\EveryThing\EveryThing32.cs" />
-    <Compile Include="Plugins\EveryThing\EveryThing64.cs" />
-    <Compile Include="Plugins\EveryThing\EveryThingUtil.cs" />
     <Compile Include="Plugins\ShowSeconds\Common\Constants.cs" />
     <Compile Include="Plugins\ShowSeconds\SecondsWindow.xaml.cs">
       <DependentUpon>SecondsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Plugins\ShowSeconds\ViewModel\SecondsDataContext.cs" />
     <Compile Include="Task\BakTask.cs" />
-    <Compile Include="Task\ToDoTask.cs" />
     <Compile Include="MyThread\MouseHookThread.cs" />
     <Compile Include="MyThread\DispatcherBuild.cs" />
-    <Compile Include="Task\UpdateTask.cs" />
-    <Compile Include="Util\AeroGlassHelper.cs" />
+
     <Compile Include="Util\BGSettingUtil.cs" />
-    <Compile Include="Util\BlurGlassUtil.cs" />
+
     <Compile Include="Util\ColorUtil.cs" />
     <Compile Include="Util\DeepCopyUtil.cs" />
     <Compile Include="Util\DefaultIcons.cs" />
@@ -313,7 +269,6 @@
     <Compile Include="Util\CommonCode.cs" />
     <Compile Include="Util\FileIcon.cs" />
     <Compile Include="Util\FileUtil.cs" />
-    <Compile Include="ViewModel\Temp\GuideInfoList.cs" />
     <Compile Include="Util\HideWindowUtil.cs" />
     <Compile Include="Util\IconHelper.cs" />
     <Compile Include="Util\IconUtil.cs" />
@@ -324,9 +279,9 @@
     <Compile Include="Util\HttpUtil.cs" />
     <Compile Include="Util\ImageUtil.cs" />
     <Compile Include="Converts\MenuWidthConvert.cs" />
-    <Compile Include="Util\MD5Util.cs" />
+
     <Compile Include="Util\MessageUtil.cs" />
-    <Compile Include="Util\MouseHook.cs" />
+
     <Compile Include="Util\MouseUtil.cs" />
     <Compile Include="Util\NativeMethods.cs" />
     <Compile Include="Util\ProcessUtil.cs" />
@@ -343,7 +298,7 @@
     <Compile Include="CustomComponent\VirtualizingWrapPanel\SpacingMode.cs" />
     <Compile Include="CustomComponent\VirtualizingWrapPanel\VirtualizingPanelBase.cs" />
     <Compile Include="CustomComponent\VirtualizingWrapPanel\VirtualizingWrapPanel.cs" />
-    <Compile Include="Util\WindowsThumbnailProvider.cs" />
+
     <Compile Include="Util\WindowUtil.cs" />
     <Compile Include="CustomComponent\VirtualizingWrapPanel\ScrollDirection.cs" />
     <Compile Include="ViewModel\AppConfig.cs" />
@@ -351,18 +306,12 @@
     <Compile Include="ViewModel\GradientBGParam.cs" />
     <Compile Include="ViewModel\CPDataContext.cs" />
     <Compile Include="ViewModel\Temp\GradientBGParamList.cs" />
-    <Compile Include="ViewModel\Temp\SearchIconList.cs" />
-    <Compile Include="ViewModel\ToDoInfo.cs" />
     <Compile Include="ViewModel\IconfontInfo.cs" />
     <Compile Include="ViewModel\IconInfo.cs" />
     <Compile Include="ViewModel\MenuInfo.cs" />
     <Page Include="Control\Other\GlobalMsgNotification.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Control\Other\BacklogNotificatin.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Control\Other\CustomIconUrlDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -376,19 +325,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Control\Other\PasswordDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Control\Other\MyColorPickerDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Control\Other\IconInfoUrlDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Control\Other\SearchResControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -399,10 +340,6 @@
     <Page Include="Control\UserControls\SystemItem\SystemItem.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Control\UserControls\ToDo\TodoControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Control\UserControls\IconFont\IconPannel.xaml">
       <SubType>Designer</SubType>
@@ -420,23 +357,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Control\Windows\ToDoInfoWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Control\Windows\ToDoWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Control\Windows\ConfigWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Control\Other\IconInfoDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Control\UserControls\Config\AboutControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -457,10 +382,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Control\Windows\IconfontWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Control\Windows\UpdateWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -514,20 +435,7 @@
     </EmbeddedResource>
     <Resource Include="Resource\Iconfont\iconfont.json" />
     <None Include="app.manifest" />
-    <None Include="Plugins\EveryThing\32\Everything.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\EveryThing\32\Everything.lng">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\EveryThing\64\Everything.ini">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\EveryThing\64\Everything.lng">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Properties\app.manifest" />
-    <None Include="Update.json" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -545,13 +453,8 @@
     <Resource Include="Resource\Iconfont\iconfont.js" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resource\Image\BacklogImg.png" />
-  </ItemGroup>
-  <ItemGroup>
+
     <Resource Include="Resource\Image\TitleLogo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resource\Image\About.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Taskbar.ico" />
@@ -598,24 +501,10 @@
     <Resource Include="Logo.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Plugins\EveryThing\lib\Everything32.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Plugins\EveryThing\lib\Everything64.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="GeekDesk.ico" />
-    <Content Include="Plugins\EveryThing\32\Everything.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Plugins\EveryThing\64\Everything.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

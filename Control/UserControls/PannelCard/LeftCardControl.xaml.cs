@@ -1,21 +1,17 @@
 ﻿using DraggAnimatedPanelExample;
 using GeekDesk.Constant;
-using GeekDesk.Control.Other;
 using GeekDesk.Control.Windows;
 using GeekDesk.Util;
 using GeekDesk.ViewModel;
-using Microsoft.Win32;
 using System;
 
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
 using WindowsAPICodePack.Dialogs;
 
 namespace GeekDesk.Control.UserControls.PannelCard
@@ -376,7 +372,6 @@ namespace GeekDesk.Control.UserControls.PannelCard
                 }
                 RunTimeStatus.IS_MENU_EDIT = false;
                 //为了解决无法修改菜单的问题
-                MainWindow.mainWindow.SearchBox.Focus();
                 MenuListBox.SelectedIndex = menuSelectIndexTemp;
             }
         }
@@ -415,7 +410,7 @@ namespace GeekDesk.Control.UserControls.PannelCard
             if (appData.AppConfig.ItemSpradeAnimation)
             {
                 //是否启用列表展开动画
-                MainWindow.mainWindow.RightCard.WrapUFG.Visibility = Visibility.Collapsed;
+                MainWindow.mainWindow.RightCard.WrapUfg.Visibility = Visibility.Collapsed;
             }
 
             //设置对应菜单的图标列表
@@ -428,18 +423,13 @@ namespace GeekDesk.Control.UserControls.PannelCard
                 if (appData.MenuList[MenuListBox.SelectedIndex].IsEncrypt)
                 {
                     appData.AppConfig.SelectedMenuIcons = null;
-                    RunTimeStatus.SHOW_MENU_PASSWORDBOX = true;
-                    MainWindow.mainWindow.RightCard.PDDialog.Title.Text = "输入密码";
-                    MainWindow.mainWindow.RightCard.PDDialog.type = PasswordType.INPUT;
-                    MainWindow.mainWindow.RightCard.PDDialog.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    MainWindow.mainWindow.RightCard.PDDialog.Visibility = Visibility.Collapsed;
                     appData.AppConfig.SelectedMenuIcons = appData.MenuList[MenuListBox.SelectedIndex].IconList;
                 }
             }
-            MainWindow.mainWindow.RightCard.WrapUFG.Visibility = Visibility.Visible;
+            MainWindow.mainWindow.RightCard.WrapUfg.Visibility = Visibility.Visible;
             //App.DoEvents();
         }
 
@@ -475,60 +465,6 @@ namespace GeekDesk.Control.UserControls.PannelCard
             }
         }
 
-        /// <summary>
-        /// 点击菜单后  隐藏搜索框
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ListBoxItem_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (RunTimeStatus.SEARCH_BOX_SHOW)
-            {
-                MainWindow.mainWindow.HidedSearchBox();
-            }
-
-            ListBoxItem lbi = sender as ListBoxItem;
-            MenuInfo mi = lbi.DataContext as MenuInfo;
-            int index = MenuListBox.Items.IndexOf(mi);
-            MenuListBox.SelectedIndex = index;
-
-            if (appData.AppConfig.IconBatch_NoWrite)
-            {
-                appData.AppConfig.IconBatch_NoWrite = false;
-                MainWindow.mainWindow.RightCard.IconListBox.SelectionMode = SelectionMode.Extended;
-            }
-        }
-
-
-        ///// <summary>
-        ///// 点击菜单后  隐藏搜索框
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e"></param>
-        //private void ListBoxItemPanel_MouseDown(object sender, MouseButtonEventArgs e)
-        //{
-        //    if (RunTimeStatus.SEARCH_BOX_SHOW)
-        //    {
-        //        MainWindow.mainWindow.HidedSearchBox();
-        //    }
-        //    MenuInfo mi = (sender as StackPanel).Tag as MenuInfo;
-        //    int index = MenuListBox.Items.IndexOf(mi);
-        //    MenuListBox.SelectedIndex = index;
-        //}
-
-
-        /// <summary>
-        /// 隐藏搜索框
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MyCard_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (RunTimeStatus.SEARCH_BOX_SHOW)
-            {
-                MainWindow.mainWindow.HidedSearchBox();
-            }
-        }
 
         private void Menu_MouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -633,46 +569,6 @@ namespace GeekDesk.Control.UserControls.PannelCard
             }
         }
 
-        private void EncryptMenu(object sender, RoutedEventArgs e)
-        {
-            MenuInfo menuInfo = ((MenuItem)sender).Tag as MenuInfo;
-            if (menuInfo.IsEncrypt)
-            {
-                MainWindow.mainWindow.RightCard.PDDialog.menuInfo = menuInfo;
-                MainWindow.mainWindow.RightCard.PDDialog.Title.Text = "输入密码";
-                MainWindow.mainWindow.RightCard.PDDialog.type = PasswordType.CANCEL;
-                RunTimeStatus.SHOW_MENU_PASSWORDBOX = true;
-                MainWindow.mainWindow.RightCard.PDDialog.Visibility = Visibility.Visible;
-                //单独设置焦点
-                MainWindow.mainWindow.RightCard.PDDialog.SetFocus();
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(appData.AppConfig.MenuPassword))
-                {
-                    MainWindow.mainWindow.RightCard.PDDialog.menuInfo = menuInfo;
-                    MainWindow.mainWindow.RightCard.PDDialog.Title.Text = "设置新密码";
-                    MainWindow.mainWindow.RightCard.PDDialog.type = PasswordType.CREATE;
-                    RunTimeStatus.SHOW_MENU_PASSWORDBOX = true;
-                    MainWindow.mainWindow.RightCard.PDDialog.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    menuInfo.IsEncrypt = true;
-                    HandyControl.Controls.Growl.Success(menuInfo.MenuName + " 已加密!", "MainWindowGrowl");
-                }
-            }
-        }
-
-        private void AlterPassword(object sender, RoutedEventArgs e)
-        {
-            MainWindow.mainWindow.RightCard.PDDialog.Title.Text = "输入旧密码";
-            MainWindow.mainWindow.RightCard.PDDialog.type = PasswordType.ALTER;
-            MainWindow.mainWindow.RightCard.PDDialog.Visibility = Visibility.Visible;
-            //单独设置焦点
-            MainWindow.mainWindow.RightCard.PDDialog.SetFocus();
-        }
-
         /// <summary>
         /// 右键点击进行处理 
         /// </summary>
@@ -686,55 +582,6 @@ namespace GeekDesk.Control.UserControls.PannelCard
                 Thread.Sleep(50);
                 RunTimeStatus.SHOW_RIGHT_BTN_MENU = false;
             }).Start();
-
-            //在没有设置密码的情况下不弹出修改密码菜单
-            if (string.IsNullOrEmpty(appData.AppConfig.MenuPassword))
-            {
-                AlterPW1.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                AlterPW1.Visibility = Visibility.Visible;
-            }
         }
-
-        private void ListBoxItem_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            ListBoxItem lbi = sender as ListBoxItem;
-            MenuInfo info = lbi.DataContext as MenuInfo;
-
-            ItemCollection ics = lbi.ContextMenu.Items;
-
-            foreach (object obj in ics)
-            {
-                MenuItem mi = (MenuItem)obj;
-                if (mi.Header.Equals("修改密码"))
-                {
-                    if (string.IsNullOrEmpty(appData.AppConfig.MenuPassword))
-                    {
-                        mi.Visibility = Visibility.Collapsed;
-                    }
-                    else
-                    {
-                        mi.Visibility = Visibility.Visible;
-                    }
-                    break;
-                }
-                if (mi.Header.Equals("加密此列表") || mi.Header.Equals("取消加密此列表"))
-                {
-                    if (info.IsEncrypt)
-                    {
-                        mi.Header = "取消加密此列表";
-                    }
-                    else
-                    {
-                        mi.Header = "加密此列表";
-                    }
-                }
-            }
-
-        }
-
-        
     }
 }

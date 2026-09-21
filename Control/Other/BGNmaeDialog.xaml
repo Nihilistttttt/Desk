@@ -6,10 +6,10 @@
         CornerRadius="4"
         Width="350"
         Height="160"
-        Style="{StaticResource BorderBG}"
+        Style="{StaticResource BorderBg}"
         >
     <Border.Resources>
-        <Style x:Key="LeftTB" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBaseStyle}">
+        <Style x:Key="LeftTb" TargetType="TextBlock" BasedOn="{StaticResource TextBlockBaseStyle}">
             <Setter Property="Width" Value="75"/>
             <Setter Property="TextAlignment" Value="Left"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -23,8 +23,8 @@
         <StackPanel>
             <Button Width="22"  Height="22" Command="hc:ControlCommands.Close" Style="{StaticResource ButtonIcon}" Foreground="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}" hc:IconElement.Geometry="{StaticResource ErrorGeometry}" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Top"/>
             <hc:UniformSpacingPanel Spacing="10" Margin="0,15,0,0">
-                <TextBlock Text="起个名字吧:"  Style="{StaticResource LeftTB}"/>
-                <TextBox x:Name="BGName" Style="{StaticResource MyTextBoxStyle}" Text="{Binding Name, Mode=OneWay}" Width="230" FontSize="14"/>
+                <TextBlock Text="起个名字吧:"  Style="{StaticResource LeftTb}"/>
+                <TextBox x:Name="BgName" Style="{StaticResource MyTextBoxStyle}" Text="{Binding Name, Mode=OneWay}" Width="230" FontSize="14"/>
             </hc:UniformSpacingPanel>
             <hc:UniformSpacingPanel Margin="0,25,0,0" Spacing="10"  Grid.ColumnSpan="4">
                 <Button Content="保存" Style="{StaticResource MyBtnStyle}" Click="Save" Margin="265,10,0,0"/>

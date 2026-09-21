@@ -4,7 +4,7 @@
 
 
     <!--整体样式-->
-    <Style x:Key="BorderBG" TargetType="Border">
+    <Style x:Key="BorderBg" TargetType="Border">
         <Style.Setters>
             <Setter Property="Background">
                 <Setter.Value>
@@ -19,14 +19,14 @@
         </Style.Setters>
     </Style>
 
-    <LinearGradientBrush x:Key="BtnBG" Opacity="0.7">
+    <LinearGradientBrush x:Key="BtnBg" Opacity="0.7">
         <GradientStop Color="White" Offset="0"/>
         <GradientStop Color="White" Offset="1"/>
     </LinearGradientBrush>
 
     <!--按钮样式-->
     <Style x:Key="MyBtnStyle" TargetType="Button" BasedOn="{StaticResource ButtonInfo}">
-        <Setter Property="Background" Value="{StaticResource BtnBG}"/>
+        <Setter Property="Background" Value="{StaticResource BtnBg}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="BorderBrush">
             <Setter.Value>

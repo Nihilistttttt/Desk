@@ -2,9 +2,7 @@
 using GeekDesk.MyThread;
 using GeekDesk.Util;
 using GeekDesk.ViewModel;
-using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -59,11 +57,6 @@ namespace GeekDesk.Control.UserControls.Config
                                 appConfig.HotkeyStr = "";
                                 appConfig.HotkeyModifiers = GlobalHotKey.HotkeyModifiers.None;
                                 break;
-                            case HotKeyType.ToDo:
-                                appConfig.ToDoHotkey = Key.None;
-                                appConfig.ToDoHotkeyStr = "";
-                                appConfig.ToDoHotkeyModifiers = GlobalHotKey.HotkeyModifiers.None;
-                                break;
                             case HotKeyType.ColorPicker:
                                 appConfig.ColorPickerHotkey = Key.None;
                                 appConfig.ColorPickerHotkeyStr = "";
@@ -75,7 +68,6 @@ namespace GeekDesk.Control.UserControls.Config
 
                     //首次按下按键
                     if ((HotKeyType.Main == hkType && (appConfig.HotkeyStr == null || appConfig.HotkeyStr.Length == 0))
-                        || (HotKeyType.ToDo == hkType && (appConfig.ToDoHotkeyStr == null || appConfig.ToDoHotkeyStr.Length == 0))
                         || (HotKeyType.ColorPicker == hkType && (appConfig.ColorPickerHotkeyStr == null || appConfig.ColorPickerHotkeyStr.Length == 0))
                         )
                     {
@@ -87,10 +79,6 @@ namespace GeekDesk.Control.UserControls.Config
                                 case HotKeyType.Main:
                                     appConfig.HotkeyStr = GetKeyName(downKey);
                                     appConfig.HotkeyModifiers = GetModifierKeys(downKey);
-                                    break;
-                                case HotKeyType.ToDo:
-                                    appConfig.ToDoHotkeyStr = GetKeyName(downKey);
-                                    appConfig.ToDoHotkeyModifiers = GetModifierKeys(downKey);
                                     break;
                                 case HotKeyType.ColorPicker:
                                     appConfig.ColorPickerHotkeyStr = GetKeyName(downKey);
@@ -124,10 +112,6 @@ namespace GeekDesk.Control.UserControls.Config
                                     appConfig.Hotkey = downKey;
                                     appConfig.HotkeyStr += downKeyStr;
                                     break;
-                                case HotKeyType.ToDo:
-                                    appConfig.ToDoHotkey = downKey;
-                                    appConfig.ToDoHotkeyStr += downKeyStr;
-                                    break;
                                 case HotKeyType.ColorPicker:
                                     appConfig.ColorPickerHotkey = downKey;
                                     appConfig.ColorPickerHotkeyStr += downKeyStr;
@@ -143,10 +127,6 @@ namespace GeekDesk.Control.UserControls.Config
                                 case HotKeyType.Main:
                                     appConfig.HotkeyStr += GetKeyName(downKey);
                                     appConfig.HotkeyModifiers |= GetModifierKeys(downKey);
-                                    break;
-                                case HotKeyType.ToDo:
-                                    appConfig.ToDoHotkeyStr += GetKeyName(downKey);
-                                    appConfig.ToDoHotkeyModifiers |= GetModifierKeys(downKey);
                                     break;
                                 case HotKeyType.ColorPicker:
                                     appConfig.ColorPickerHotkeyStr += GetKeyName(downKey);
@@ -245,18 +225,9 @@ namespace GeekDesk.Control.UserControls.Config
                             }
                             MainWindow.RegisterHotKey(false);
                             break;
-                        case HotKeyType.ToDo:
-                            if (MainWindow.toDoHotKeyId != -1)
-                            {
-                                //Hotkey.UnRegist(new WindowInteropHelper(MainWindow.toDoInfoWindow).Handle, Hotkey.keymap[MainWindow.toDoHotKeyId]);
-                                GlobalHotKey.Dispose(MainWindow.toDoHotKeyId);
-                            }
-                            MainWindow.RegisterCreateToDoHotKey(false);
-                            break;
                         case HotKeyType.ColorPicker:
                             if (MainWindow.colorPickerHotKeyId != -1)
                             {
-                                //Hotkey.UnRegist(new WindowInteropHelper(MainWindow.toDoInfoWindow).Handle, Hotkey.keymap[MainWindow.toDoHotKeyId]);
                                 GlobalHotKey.Dispose(MainWindow.colorPickerHotKeyId);
                             }
                             MainWindow.RegisterColorPickerHotKey(false);
@@ -273,8 +244,6 @@ namespace GeekDesk.Control.UserControls.Config
             {
                 case HotKeyType.Main:
                     return true == appConfig.EnableAppHotKey;
-                case HotKeyType.ToDo:
-                    return true == appConfig.EnableTodoHotKey;
                 case HotKeyType.ColorPicker:
                     return true == appConfig.EnableColorPickerHotKey;
             }
@@ -348,19 +317,6 @@ namespace GeekDesk.Control.UserControls.Config
                         if (MainWindow.hotKeyId != -1)
                         {
                             GlobalHotKey.Dispose(MainWindow.hotKeyId);
-                        }
-                    }
-                    break;
-                case HotKeyType.ToDo:
-                    if (true == appConfig.EnableTodoHotKey)
-                    {
-                        MainWindow.RegisterCreateToDoHotKey(false);
-                    }
-                    else
-                    {
-                        if (MainWindow.hotKeyId != -1)
-                        {
-                            GlobalHotKey.Dispose(MainWindow.toDoHotKeyId);
                         }
                     }
                     break;

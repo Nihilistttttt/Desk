@@ -26,13 +26,13 @@ namespace GeekDesk.Control.UserControls.Config
             InitializeComponent();
             if (appConfig.BGStyle != BGStyle.GradientBac)
             {
-                GradientBGConf.Visibility = Visibility.Collapsed;
-                ImgBGConf.Visibility = Visibility.Visible;
+                GradientBgConf.Visibility = Visibility.Collapsed;
+                ImgBgConf.Visibility = Visibility.Visible;
             }
             else
             {
-                ImgBGConf.Visibility = Visibility.Collapsed;
-                GradientBGConf.Visibility = Visibility.Visible;
+                ImgBgConf.Visibility = Visibility.Collapsed;
+                GradientBgConf.Visibility = Visibility.Visible;
             }
         }
 
@@ -132,13 +132,13 @@ namespace GeekDesk.Control.UserControls.Config
             BGSettingUtil.BGSetting();
             if (appConfig.BGStyle != BGStyle.GradientBac)
             {
-                GradientBGConf.Visibility = Visibility.Collapsed;
-                ImgBGConf.Visibility = Visibility.Visible;
+                GradientBgConf.Visibility = Visibility.Collapsed;
+                ImgBgConf.Visibility = Visibility.Visible;
             }
             else
             {
-                ImgBGConf.Visibility = Visibility.Collapsed;
-                GradientBGConf.Visibility = Visibility.Visible;
+                ImgBgConf.Visibility = Visibility.Collapsed;
+                GradientBgConf.Visibility = Visibility.Visible;
             }
         }
 

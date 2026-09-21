@@ -3,13 +3,10 @@ using GeekDesk.MyThread;
 using GeekDesk.ViewModel;
 using HandyControl.Controls;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace GeekDesk.Util
@@ -22,6 +19,7 @@ namespace GeekDesk.Util
         {
             if (string.IsNullOrEmpty(icon.Path) && string.IsNullOrEmpty(icon.Name))
             {
+                MainWindow.HideApp();
                 // 路径和名称都为空，直接返回，不执行任何操作
                 return;
             }
@@ -63,11 +61,13 @@ namespace GeekDesk.Util
                                     if (!useRelativePath)
                                     {
                                         StartIconApp(icon, type, true);
+                                        MainWindow.HideApp();
                                         return;
                                     }
                                     else
                                     {
                                         HandyControl.Controls.Growl.WarningGlobal("程序启动失败(文件路径不存在或已删除)!");
+                                        MainWindow.HideApp();
                                         return;
                                     }
                                 }
@@ -148,11 +148,6 @@ namespace GeekDesk.Util
                     }
                     icon.Count++;
 
-                    //隐藏搜索框
-                    //if (RunTimeStatus.SEARCH_BOX_SHOW)
-                    //{
-                    //    MainWindow.mainWindow.HidedSearchBox();
-                    //}
                 }
                 catch (Exception e)
                 {
@@ -166,9 +161,6 @@ namespace GeekDesk.Util
                         LogUtil.WriteErrorLog(e, "程序启动失败:path=" + icon.Path + ",type=" + type);
                     }
                 }
-
-                //启动后根据是否开启了使用次数排序判断是否执行一次排序
-                CommonCode.SortIconList(MainWindow.appData.AppConfig.IconSortType == (SortType.COUNT_LOW|SortType.COUNT_UP) ? true : false);
             });
         }
 
@@ -179,6 +171,7 @@ namespace GeekDesk.Util
             if (type == IconStartType.SHOW_IN_EXPLORE)
             {
                 Growl.WarningGlobal("系统项目不支持打开文件位置操作!");
+                MainWindow.HideApp();
                 return;
             }
             switch (startArg)

@@ -1,9 +1,7 @@
 ﻿using GeekDesk.Constant;
-using GeekDesk.Task;
 using GeekDesk.Util;
 using GeekDesk.ViewModel;
 using HandyControl.Controls;
-using Quartz;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -11,7 +9,7 @@ using System.Windows.Input;
 namespace GeekDesk.Control.Other
 {
     /// <summary>
-    /// BacklogNotificatin.xaml 的交互逻辑
+    /// GlobalMsgNotification.xaml 的交互逻辑
     /// </summary>
     public partial class GlobalMsgNotification
     {

@@ -23,7 +23,7 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <Image x:Name="DesktopBG" RenderOptions.BitmapScalingMode="HighQuality"/>
+        <Image x:Name="DesktopBg" RenderOptions.BitmapScalingMode="HighQuality"/>
 
         <Canvas HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent">
             <Canvas x:Name="ColorCanvas" 
@@ -54,7 +54,7 @@
                                     Margin="20,0,0,0"
                                     >
                                 <Grid>
-                                    <Rectangle x:Name="PixelBG" StrokeThickness="0">
+                                    <Rectangle x:Name="PixelBg" StrokeThickness="0">
                                         <Rectangle.Fill>
                                             <VisualBrush ViewboxUnits="Absolute" Viewbox="0,0,20,20"
                                             ViewportUnits="RelativeToBoundingBox" Viewport="0,0,1,1">
@@ -74,13 +74,13 @@
                         <WrapPanel HorizontalAlignment="Center" Height="80" Margin="0,85,0,5">
                             <StackPanel Width="100" Height="80">
                                 <TextBlock Text="RGB:" Style="{StaticResource TextKey}"/>
-                                <TextBlock x:Name="PixelColor_RGB"  Style="{StaticResource TextValue}"/>
+                                <TextBlock x:Name="PixelColorRgb"  Style="{StaticResource TextValue}"/>
 
                                 <TextBlock Text="HTML:" Margin="0,5,0,0" Style="{StaticResource TextKey}"/>
-                                <TextBlock x:Name="PixelColor_HTML" Style="{StaticResource TextValue}"/>
+                                <TextBlock x:Name="PixelColorHtml" Style="{StaticResource TextValue}"/>
                             </StackPanel>
                             <StackPanel Width="65" Height="80" Margin="10,0,0,0">
-                                <TextBlock x:Name="Pixel_XY" TextAlignment="Right"/>
+                                <TextBlock x:Name="PixelXy" TextAlignment="Right"/>
                             </StackPanel>
                         </WrapPanel>
                     </Grid>
