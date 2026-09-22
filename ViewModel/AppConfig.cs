@@ -24,6 +24,8 @@ namespace GeekDesk.ViewModel
         private SortType iconSortType = SortType.CUSTOM; //图表排序类型
         private double windowWidth = (double)CommonEnum.WINDOW_WIDTH;  //窗口宽度
         private double windowHeight = (double)CommonEnum.WINDOW_HEIGHT; //窗口高度
+        private double windowLeft = double.NaN;  //窗口左边界
+        private double windowTop = double.NaN;   //窗口上边界
         private double menuCardWidth = (double)CommonEnum.MENU_CARD_WIDHT;//菜单栏宽度
         private int selectedMenuIndex = 0;  //上次选中菜单索引
         private bool followMouse = false;  //面板跟随鼠标 默认是
@@ -911,6 +913,32 @@ namespace GeekDesk.ViewModel
             {
                 windowHeight = value;
                 OnPropertyChanged("WindowHeight");
+            }
+        }
+
+        public double WindowLeft
+        {
+            get
+            {
+                return windowLeft;
+            }
+            set
+            {
+                windowLeft = value;
+                OnPropertyChanged("WindowLeft");
+            }
+        }
+
+        public double WindowTop
+        {
+            get
+            {
+                return windowTop;
+            }
+            set
+            {
+                windowTop = value;
+                OnPropertyChanged("WindowTop");
             }
         }
 

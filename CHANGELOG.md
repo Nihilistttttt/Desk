@@ -4,6 +4,48 @@
 
 ---
 
+## 2026-09-22 — 窗口宽度固定13列 + 拾色器按钮 + 编辑模式中心十字线 + 窗口位置持久化
+
+### 变更记录
+- **拾色器按钮**：MainWindow 右上角新增吸管图标按钮（黑边白底），Click 调用 GlobalColorPickerWindow.CreateNoShow()
+- **关闭按钮重绘**：从圆形叉叉改为简洁 X 图标，统一黑边白底风格
+- **窗口宽度固定13列**：GridPositionPanel 新增 Columns 依赖属性（默认13），MeasureOverride 返回 max(maxCol, 13) × CellWidth；Window_SizeChanged 水平方向强制 idealW = hOverhead + 13 × cellW
+- **WrapPanel→Grid**：RightCardControl 中 WrapPanel 改为 Grid，消除 WrapPanel 不拉伸子元素导致的右侧空隙
+- **GridPositionPanel 填满可用宽度**：MeasureOverride 返回 max(desiredWidth, availableSize.Width)，确保面板填满 ListBox 无空隙
+- **窗口大小吸附**：SnapWindowSize 提取为独立方法，Window_Loaded 中 Dispatcher.BeginInvoke(Loaded) 延迟调用，解决初始加载时 listBox.ActualWidth=0 跳过调整的问题
+- **编辑模式中心十字线**：RightCardControl 中新增 CenterCrosshair（红色半透明十字线+可拖动圆点），UpdateCenterCrosshair 按实际图标范围计算中心；进入编辑模式时 CenterWindowOnGrid 居中窗口使网格中心对齐屏幕中心
+- **中心圆点可拖动**：Ellipse 设 IsHitTestVisible=True + Cursor=SizeAll，PreviewMouseLeftButtonDown 调用 MainWindow.DragMove()
+- **窗口位置持久化**：AppConfig 新增 WindowLeft/WindowTop 属性，LocationChanged 事件实时保存；CenterWindowOnScreen 仅在无保存值时设默认位置
+- **右上角按钮动态对齐**：LayoutUpdated 事件中通过 TransformToAncestor 计算 Card 右边缘与按钮右边缘实际差值，动态修正 MainBtnPanel 右 Margin
+
+### 踩坑与解决措施
+
+#### 坑 17：WrapPanel 不拉伸子元素导致右侧空隙
+- **现象**：窗口宽度已设为 13 列 + 开销，但右边仍有约 98px 空隙。
+- **根因**：WrapPanel 的 ArrangeOverride 按子元素 desired size 排列，不拉伸到 full width。UniformGrid desired width = GridPositionPanel desired width = 13×CellWidth = 1443，但 WrapPanel 可用宽度 = 1541.6，差值 98.6px 成为空隙。hOverhead 被误算为 110.6（实际应 12），idealW = 1553.6 = WinW，needSnapW=False，窗口不调整。
+- **解决**：WrapPanel 改为 Grid（拉伸子元素）；GridPositionPanel.MeasureOverride 返回 max(desired, availableSize.Width) 填满可用宽度。
+- **教训**：WrapPanel 不会 Stretch 子元素到容器宽度，需要 full-width 布局时用 Grid。
+
+#### 坝 18：初始加载时 SizeChanged 跳过窗口宽度调整
+- **现象**：SnapWindowSize 逻辑正确但窗口宽度始终不变。
+- **根因**：LoadData 设置 Width 触发 SizeChanged，此时 listBox.ActualWidth=0（布局未完成），SnapWindowSize return。之后布局完成但 SizeChanged 不再触发。
+- **解决**：Window_Loaded 末尾 Dispatcher.BeginInvoke(DispatcherPriority.Loaded) 延迟调用 SnapWindowSize，确保布局完成后执行。
+- **教训**：WPF 初始加载时 ActualWidth/ActualHeight 可能为 0，延迟到 Loaded 优先级后再读取。
+
+#### 坑 19：CenterWindowOnScreen 覆盖保存的窗口位置
+- **现象**：拖动窗口后重启，位置又回到 (-8, 0)。
+- **根因**：CenterWindowOnScreen 在 Window_Loaded 中无条件设 Left=-8, Top=0，覆盖了 LoadData 中从 AppConfig 恢复的位置。
+- **解决**：CenterWindowOnScreen 检查 WindowLeft/WindowTop 是否已有保存值（非 NaN），有则 return 不覆盖。
+- **教训**：默认值初始化逻辑不能无条件覆盖用户持久化数据。
+
+#### 坑 20：Boolean2VisibilityConverter 未传 ConverterParameter 导致非编辑模式也显示十字线
+- **现象**：中心十字线在非编辑模式下也可见。
+- **根因**：Boolean2VisibilityConverter 的 Convert 方法在 value=false 时返回 (Visibility)parameter，未传 ConverterParameter 时 parameter=null，强转为 Visibility 得 0 即 Visible。
+- **解决**：改为代码控制 Visibility（UpdateCenterCrosshair 方法中按 IconBatch_NoWrite 设置），不依赖 Converter。
+- **教训**：使用 Converter 时必须确认所有分支的返回值，未传参数的分支可能产生意外默认值。
+
+---
+
 ## 2026-09-21 (4) — 相对路径可编辑 + 防误隐藏 + 新图标自动定位
 
 ### 变更记录

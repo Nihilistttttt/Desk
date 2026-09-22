@@ -143,6 +143,10 @@ namespace GeekDesk
 
             this.Width = appData.AppConfig.WindowWidth;
             this.Height = appData.AppConfig.WindowHeight;
+            if (!double.IsNaN(appData.AppConfig.WindowLeft))
+                this.Left = appData.AppConfig.WindowLeft;
+            if (!double.IsNaN(appData.AppConfig.WindowTop))
+                this.Top = appData.AppConfig.WindowTop;
         }
 
         /// <summary>
@@ -208,13 +212,23 @@ namespace GeekDesk
             MessageUtil.ChangeWindowMessageFilter(MessageUtil.WM_COPYDATA, 1);
             
             CenterWindowOnScreen();
+
+            LogUtil.WriteLog($"Window_Loaded complete. Width={this.Width:F1}, Height={this.Height:F1}, Left={this.Left:F1}, Top={this.Top:F1}");
+
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                LogUtil.WriteLog("Delayed SnapWindowSize from Window_Loaded");
+                SnapWindowSize();
+            }), System.Windows.Threading.DispatcherPriority.Loaded);
         }
 
         private void CenterWindowOnScreen()
         {
-                // 计算居中位置
-                this.Left = -8;
-                this.Top = 0;
+            if (!double.IsNaN(appData.AppConfig.WindowLeft) &&
+                !double.IsNaN(appData.AppConfig.WindowTop))
+                return;
+            this.Left = -8;
+            this.Top = 0;
         }
 
 
@@ -589,6 +603,8 @@ namespace GeekDesk
         }
 
 
+        private bool _isSnappingSize = false;
+
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (this.DataContext != null)
@@ -596,6 +612,98 @@ namespace GeekDesk
                 AppData appData = this.DataContext as AppData;
                 appData.AppConfig.WindowWidth = this.Width;
                 appData.AppConfig.WindowHeight = this.Height;
+            }
+
+            SnapWindowSize();
+        }
+
+        private void SnapWindowSize()
+        {
+            if (_isSnappingSize) return;
+            if (this.DataContext == null) return;
+
+            var listBox = RightCard.IconListBox;
+            if (listBox == null || listBox.ActualWidth < 1 || listBox.ActualHeight < 1)
+            {
+                LogUtil.WriteLog($"SnapWindowSize skip: listBox={listBox != null}, W={listBox?.ActualWidth}, H={listBox?.ActualHeight}");
+                return;
+            }
+
+            AppData data = this.DataContext as AppData;
+            double cellW = data.AppConfig.ImgPanelWidth;
+            double cellH = data.AppConfig.ImgPanelHeight;
+            if (cellW < 1 || cellH < 1)
+            {
+                LogUtil.WriteLog($"SnapWindowSize skip: cellW={cellW}, cellH={cellH}");
+                return;
+            }
+
+            double hOverhead = this.Width - listBox.ActualWidth;
+            double vOverhead = this.Height - listBox.ActualHeight;
+
+            const int gridCols = 13;
+            double gridW = gridCols * cellW;
+
+            int rows = (int)Math.Floor(listBox.ActualHeight / cellH + 0.5);
+            if (rows < 1) rows = 1;
+
+            double idealW = hOverhead + gridW;
+            double idealH = vOverhead + rows * cellH;
+
+            bool needSnapW = Math.Abs(this.Width - idealW) > 0.5;
+            bool needSnapH = Math.Abs(this.Height - idealH) > 0.5;
+
+            LogUtil.WriteLog($"SnapWindowSize: WinW={this.Width:F1}, WinH={this.Height:F1}, listW={listBox.ActualWidth:F1}, listH={listBox.ActualHeight:F1}, cellW={cellW:F1}, cellH={cellH:F1}, hOverhead={hOverhead:F1}, idealW={idealW:F1}, idealH={idealH:F1}, needSnapW={needSnapW}, needSnapH={needSnapH}, menuW={data.AppConfig.MenuCardWidth:F1}, cardW={RightCard.WrapCard.ActualWidth:F1}, borderW={this.ActualWidth:F1}");
+
+            if (needSnapW || needSnapH)
+            {
+                _isSnappingSize = true;
+                if (needSnapW) this.Width = idealW;
+                if (needSnapH) this.Height = idealH;
+                _isSnappingSize = false;
+                LogUtil.WriteLog($"SnapWindowSize applied: newW={this.Width:F1}, newH={this.Height:F1}");
+            }
+        }
+
+        private void Window_LocationChanged(object sender, EventArgs e)
+        {
+            if (this.DataContext != null)
+            {
+                AppData appData = this.DataContext as AppData;
+                appData.AppConfig.WindowLeft = this.Left;
+                appData.AppConfig.WindowTop = this.Top;
+            }
+        }
+
+        private bool _isAligningButtons = false;
+
+        private void Window_LayoutUpdated(object sender, EventArgs e)
+        {
+            if (_isAligningButtons) return;
+            if (MainBtnPanel == null || RightCard == null || RightCard.WrapCard == null) return;
+            if (MainBtnPanel.ActualWidth < 1 || RightCard.WrapCard.ActualWidth < 1) return;
+
+            try
+            {
+                Point cardRightPt = RightCard.WrapCard.TransformToAncestor(this)
+                    .Transform(new Point(RightCard.WrapCard.ActualWidth, 0));
+                double gridRight = cardRightPt.X - 11;
+
+                Point btnRightPt = MainBtnPanel.TransformToAncestor(this)
+                    .Transform(new Point(MainBtnPanel.ActualWidth, 0));
+                double btnRight = btnRightPt.X;
+
+                double diff = btnRight - gridRight;
+                if (Math.Abs(diff) > 1)
+                {
+                    _isAligningButtons = true;
+                    double newMargin = MainBtnPanel.Margin.Right + diff;
+                    MainBtnPanel.Margin = new Thickness(0, 0, newMargin, 0);
+                    _isAligningButtons = false;
+                }
+            }
+            catch
+            {
             }
         }
 
@@ -668,6 +776,11 @@ namespace GeekDesk
         private void ColorPicker(object sender, RoutedEventArgs e)
         {
             TaskbarContextMenu.IsOpen = false;
+            GlobalColorPickerWindow.CreateNoShow();
+        }
+
+        private void ColorPickerButtonClick(object sender, RoutedEventArgs e)
+        {
             GlobalColorPickerWindow.CreateNoShow();
         }
 

@@ -263,6 +263,8 @@ namespace GeekDesk.Control.UserControls.PannelCard
 
                 CommonCode.SaveAppData(MainWindow.appData, Constants.DATA_FILE_PATH);
                 RefreshGridPanel();
+                UpdateCenterCrosshair();
+                AdjustWindowWidthToGrid();
                 e.Effects = DragDropEffects.Move;
                 return;
             }
@@ -279,6 +281,8 @@ namespace GeekDesk.Control.UserControls.PannelCard
             }
             CommonCode.SortIconList();
             CommonCode.SaveAppData(MainWindow.appData, Constants.DATA_FILE_PATH);
+            UpdateCenterCrosshair();
+            AdjustWindowWidthToGrid();
         }
 
         private void RefreshGridPanel()
@@ -298,6 +302,8 @@ namespace GeekDesk.Control.UserControls.PannelCard
         {
             appData.MenuList[appData.AppConfig.SelectedMenuIndex].IconList.Remove((IconInfo)((MenuItem)sender).Tag);
             CheckAndExitEditMode();
+            UpdateCenterCrosshair();
+            AdjustWindowWidthToGrid();
         }
 
         /// <summary>
@@ -315,6 +321,8 @@ namespace GeekDesk.Control.UserControls.PannelCard
             }
 
             CheckAndExitEditMode();
+            UpdateCenterCrosshair();
+            AdjustWindowWidthToGrid();
         }
 
         /// <summary>
@@ -724,6 +732,8 @@ namespace GeekDesk.Control.UserControls.PannelCard
                     info.IsChecked_NoWrite = false;
                 }
                 appData.AppConfig.CardOpacity = 100;
+
+                CenterWindowOnGrid();
             }
             else
             {
@@ -732,6 +742,91 @@ namespace GeekDesk.Control.UserControls.PannelCard
             appData.AppConfig.IconBatch_NoWrite = !appData.AppConfig.IconBatch_NoWrite;
             IconListBox.SelectionMode = SelectionMode.Multiple;
             UpdateCheckBoxVisibility();
+            UpdateCenterCrosshair();
+            AdjustWindowWidthToGrid();
+        }
+
+        private void GetGridRange(out double gridW, out double gridH)
+        {
+            double cellW = appData.AppConfig.ImgPanelWidth;
+            double cellH = appData.AppConfig.ImgPanelHeight;
+            int maxCol = 0;
+            int maxRow = 0;
+            foreach (var item in IconListBox.Items)
+            {
+                if (item is IconInfo icon && icon.GridX >= 0 && icon.GridY >= 0)
+                {
+                    maxCol = Math.Max(maxCol, icon.GridX + 1);
+                    maxRow = Math.Max(maxRow, icon.GridY + 1);
+                }
+            }
+            gridW = maxCol * cellW;
+            gridH = maxRow * cellH;
+        }
+
+        public void AdjustWindowWidthToGrid()
+        {
+            double cellW = appData.AppConfig.ImgPanelWidth;
+            if (cellW < 1) return;
+
+            const int gridCols = 13;
+            double gridW = gridCols * cellW;
+
+            var mainWindow = Window.GetWindow(this) as MainWindow;
+            if (mainWindow == null) return;
+
+            var listBox = IconListBox;
+            if (listBox == null || listBox.ActualWidth < 1) return;
+
+            double hOverhead = mainWindow.Width - listBox.ActualWidth;
+            double idealW = hOverhead + gridW;
+            if (Math.Abs(mainWindow.Width - idealW) > 0.5)
+            {
+                mainWindow.Width = idealW;
+            }
+        }
+
+        private void CenterWindowOnGrid()
+        {
+            GetGridRange(out double gridW, out double gridH);
+
+            const double hOffset = 6;
+            const double vOffset = 81;
+
+            var workArea = SystemParameters.WorkArea;
+            var mainWindow = Window.GetWindow(this) as MainWindow;
+            if (mainWindow != null)
+            {
+                double screenCenterX = workArea.Left + workArea.Width / 2;
+                double screenCenterY = workArea.Top + workArea.Height / 2;
+                mainWindow.Left = screenCenterX - (hOffset + gridW / 2);
+                mainWindow.Top = screenCenterY - (vOffset + gridH / 2);
+            }
+        }
+
+        private void CenterEllipse_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var mainWindow = Window.GetWindow(this) as MainWindow;
+            if (mainWindow != null)
+            {
+                mainWindow.DragMove();
+            }
+        }
+
+        private void UpdateCenterCrosshair()
+        {
+            if (!appData.AppConfig.IconBatch_NoWrite)
+            {
+                CenterCrosshair.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            GetGridRange(out double gridW, out double gridH);
+
+            CenterCrosshair.Width = gridW;
+            CenterCrosshair.Height = gridH;
+            CenterCrosshair.Margin = new Thickness(10, 20, 0, 0);
+            CenterCrosshair.Visibility = Visibility.Visible;
         }
 
         /// <summary>
